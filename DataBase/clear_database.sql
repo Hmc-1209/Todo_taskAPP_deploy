@@ -1,0 +1,9 @@
+-- Clear all datas from database
+USE Todo_taskAPP;
+DELETE FROM Task;
+DELETE FROM Repository;
+DELETE FROM User;
+
+ALTER TABLE Task AUTO_INCREMENT = 1;
+ALTER TABLE Repository AUTO_INCREMENT = 1;
+ALTER TABLE User AUTO_INCREMENT = 1;

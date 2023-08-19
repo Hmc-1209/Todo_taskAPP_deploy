@@ -52,6 +52,7 @@ CREATE TABLE Task(
     task_id INT AUTO_INCREMENT PRIMARY KEY,
     task_name VARCHAR(25) NOT NULL,
     task_description VARCHAR(255),
+    task_due_date DATE,
     task_finish INT NOT NULL,
     creator_id INT NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES User(user_id),

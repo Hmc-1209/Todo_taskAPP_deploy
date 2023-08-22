@@ -59,3 +59,13 @@ CREATE TABLE Task(
     belongs_to_repository_id INT NOT NULL,
     FOREIGN KEY (belongs_to_repository_id) REFERENCES Repository(repo_id)
 );
+
+-- Create TAG table
+CREATE TABLE Tag(
+    tag_id INT AUTO_INCREMENT PRIMARY KEY,
+    tag_name VARCHAR(10) NOT NULL,
+    creator_id INT NOT NULL,
+    FOREIGN KEY (creator_id) REFERENCES User(user_id),
+    belongs_to_repository_id INT NOT NULL,
+    FOREIGN KEY (belongs_to_repository_id) REFERENCES Repository(repo_id)
+)

@@ -68,4 +68,4 @@ CREATE TABLE Tag(
     FOREIGN KEY (creator_id) REFERENCES User(user_id),
     belongs_to_repository_id INT NOT NULL,
     FOREIGN KEY (belongs_to_repository_id) REFERENCES Repository(repo_id)
-)
+);

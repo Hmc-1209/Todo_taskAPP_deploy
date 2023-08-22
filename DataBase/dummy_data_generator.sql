@@ -31,3 +31,7 @@ INSERT INTO Task (task_name, task_description, task_finish, creator_id, belongs_
   ("Physics ch.10", "Prepare materials", 0, 5, 10),
   ("Do the dishes", "Date 2023/8/23", 0, 4, 8);
   
+INSERT INTO Tag (tag_name, creator_id, belongs_to_repository_id) VALUES
+  ("Urgent", 1, 1),
+  ("Important", 2, 5),
+  ("Urgent", 2, 4);

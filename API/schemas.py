@@ -9,7 +9,7 @@ class BaseUser(BaseModel):
 class CreateUser(BaseUser):
   user_password: str
 
-class UpdateUser(CreateUser):
+class UpdateUser(BaseUser):
   user_id: int
 
 

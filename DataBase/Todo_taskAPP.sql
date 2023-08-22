@@ -5,7 +5,7 @@ DROP USER IF EXISTS 'Todo_taskApp_admin'@'%';
 DROP USER IF EXISTS 'Todo_taskApp_user'@'%';
 
 -- Setting configuration
-SOURCE ./config.sql;
+SOURCE ~/Documents/Todo_taskAPP_server/DataBase/config.sql;
 
 CREATE DATABASE Todo_taskAPP;
 USE Todo_taskAPP;

@@ -1,4 +1,4 @@
 fastapi[all]
 databases
 sshtunnel
-asuncmy
+asyncmy

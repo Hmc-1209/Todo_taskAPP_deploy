@@ -2,6 +2,7 @@ from models import User
 from database import db
 from fastapi import HTTPException, status
 from schemas import CreateUser, UpdateUser, DeleteUser
+from Authentication import hashing
 
 
 async def get_spec_user_by_id(user_id: int):
@@ -67,9 +68,10 @@ async def create_new_user(user: CreateUser):
     stmt = User.insert().values(
         user_name=user.user_name,
         user_birthdate=user.user_birthdate,
-        user_password=user.user_password,
+        user_password=hashing.hashing_password(user.user_password),
     )
 
+    # Check effected row
     result = await db.execute(stmt)
     if result == 0:
         raise HTTPException(
@@ -130,7 +132,7 @@ async def delete_spec_user(user: DeleteUser):
         )
 
     # Check the password of user
-    if user_info.user_password != user.user_password:
+    if hashing.verify_password(user_info.user_password, hashing.hashing_password(user.user_password)):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Password incorrect.",

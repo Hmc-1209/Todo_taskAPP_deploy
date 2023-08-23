@@ -2,3 +2,4 @@ fastapi[all]
 databases
 sshtunnel
 asyncmy
+passlib[bcrypt]

@@ -27,7 +27,7 @@ async def read_all_user() -> list[UpdateUser]:
 
 
 @router.post("/create")
-async def create_new_user(user: CreateUser) -> None:
+async def create_user(user: CreateUser) -> None:
     """The router of creating a user"""
 
     return await create_new_user(user)

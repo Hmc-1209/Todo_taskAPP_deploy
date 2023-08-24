@@ -2,10 +2,13 @@ from models import Repository, User
 from database import db
 from fastapi import HTTPException, status
 from schemas import CreateRepository, UpdateRepository
+from Repository.CommonCRUD import check_user, check_repo
 
 
 async def get_user_repositories(user_id: int):
     """Read out all repositories created by the user"""
+
+    await check_user(user_id)
 
     stmt = Repository.select().where(Repository.c.creator_id == user_id)
 
@@ -15,14 +18,7 @@ async def get_user_repositories(user_id: int):
 async def create_new_repository(new_repo: CreateRepository):
     """Create the new repository for user"""
 
-    stmt = User.select().where(User.c.user_id == new_repo.creator_id)
-    user = await db.fetch_one(stmt)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User with corresponding id does not exist.",
-        )
+    await check_user(new_repo.creator_id)
 
     stmt = Repository.insert().values(
         repo_name=new_repo.repo_name, creator_id=new_repo.creator_id
@@ -40,14 +36,7 @@ async def create_new_repository(new_repo: CreateRepository):
 async def update_repository_info(repo: UpdateRepository):
     """Updating the repository info"""
 
-    stmt = Repository.select().where(Repository.c.repo_id == repo.repo_id)
-    origin_repo = await db.fetch_one(stmt)
-
-    if not origin_repo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Repository with corresponding id does not exist.",
-        )
+    await check_repo(repo.repo_id)
 
     stmt = (
         Repository.update()
@@ -68,14 +57,7 @@ async def update_repository_info(repo: UpdateRepository):
 async def delete_repository(repo: UpdateRepository):
     """Delete the specific repository"""
 
-    stmt = Repository.select().where(Repository.c.repo_id == repo.repo_id)
-    origin_repo = await db.fetch_one(stmt)
-
-    if not origin_repo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Repository with corresponding id does not exist.",
-        )
+    await check_repo(repo.repo_id)
 
     stmt = Repository.delete().where(Repository.c.repo_id == repo.repo_id)
     if not await db.execute(stmt):

@@ -39,12 +39,29 @@ class CreateRepository(BaseRepository):
 class BaseTask(BaseModel):
     task_name: str
     task_description: str
+    task_due_date: date
+    task_finish: int
 
 
-class CreateTask(BaseTask):
-    creator_id: int
+class ReadTasksUsingUserId(BaseTask):
     belongs_to_repository_id: int
 
 
+class CreateTask(ReadTasksUsingUserId):
+    creator_id: int
+
+
 class UpdateTask(CreateTask):
-    task_finish: int
+    task_id: int
+    creator_id: int
+
+
+# ----- Schemas for Tag table -----
+class BaseTag(BaseModel):
+    tag_id: str
+    tag_name: str
+
+
+class CreateTag(BaseTask):
+    creator_id: int
+    belongs_to_repository_id: int

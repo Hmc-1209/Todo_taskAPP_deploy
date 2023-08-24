@@ -3,19 +3,13 @@ from database import db
 from fastapi import HTTPException, status
 from schemas import CreateUser, UpdateUser, DeleteUser
 from Authentication import hashing
+from Repository.CommonCRUD import *
 
 
 async def get_spec_user_by_id(user_id: int):
     """Get the specific user's info by id"""
 
-    stmt = User.select().where(User.c.user_id == user_id)
-    user = await db.fetch_one(stmt)
-
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User with corresponding id does not exist.",
-        )
+    user = await check_user(user_id)
 
     return user
 
@@ -85,15 +79,7 @@ async def create_new_user(user: CreateUser):
 async def update_user_info(user: UpdateUser):
     """Chenge the info of corresponding user id"""
 
-    stmt = User.select().where(User.c.user_id == user.user_id)
-    user_info = await db.fetch_one(stmt)
-
-    # Check the existence of user
-    if not user_info:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User with corresponding id does not exist.",
-        )
+    user_info = await check_user(user.user_id)
 
     # Check the user's new name already exist or not
     if check_user_existence(user.user_name):
@@ -121,18 +107,12 @@ async def update_user_info(user: UpdateUser):
 async def delete_spec_user(user: DeleteUser):
     """Delete the user with corresponding user id"""
 
-    stmt = User.select().where(User.c.user_id == user.user_id)
-    user_info = await db.fetch_one(stmt)
-
-    # Check the existence of user
-    if not user_info:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User with corresponding id does not exist.",
-        )
+    user_info = await check_user(user.user_id)
 
     # Check the password of user
-    if hashing.verify_password(user_info.user_password, hashing.hashing_password(user.user_password)):
+    if hashing.verify_password(
+        user_info.user_password, hashing.hashing_password(user.user_password)
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Password incorrect.",

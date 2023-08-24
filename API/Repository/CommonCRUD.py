@@ -19,6 +19,7 @@ async def check_user(user_id):
 
     if not user:
         raise user_not_found
+    return user
 
 
 async def check_repo(repo_id):
@@ -27,3 +28,4 @@ async def check_repo(repo_id):
 
     if not origin_repo:
         raise repo_not_found
+    return origin_repo

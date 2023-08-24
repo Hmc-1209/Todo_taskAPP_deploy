@@ -39,7 +39,7 @@ class CreateRepository(BaseRepository):
 class BaseTask(BaseModel):
     task_name: str
     task_description: str
-    task_due_date: date
+    task_due_date: date | None
     task_finish: int
 
 
@@ -47,11 +47,7 @@ class ReadTasksUsingUserId(BaseTask):
     belongs_to_repository_id: int
 
 
-class CreateTask(ReadTasksUsingUserId):
-    creator_id: int
-
-
-class UpdateTask(CreateTask):
+class UpdateTask(ReadTasksUsingUserId):
     task_id: int
     creator_id: int
 
@@ -62,6 +58,6 @@ class BaseTag(BaseModel):
     tag_name: str
 
 
-class CreateTag(BaseTask):
+class CreateTag(BaseTag):
     creator_id: int
     belongs_to_repository_id: int

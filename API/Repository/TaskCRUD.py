@@ -1,7 +1,7 @@
 from models import User, Repository, Task
 from database import db
 from fastapi import HTTPException, status
-from schemas import BaseTask, CreateTask, ReadTasksUsingUserId
+from schemas import BaseTask
 from Repository.CommonCRUD import check_user
 
 
@@ -12,4 +12,5 @@ async def get_tasks_by_user_id(user_id: int):
 
     stmt = Task.select().where(Task.c.creator_id == user_id)
     tasks = await db.fetch_all(stmt)
+    print(tasks)
     return tasks

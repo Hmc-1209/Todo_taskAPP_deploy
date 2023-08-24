@@ -28,7 +28,7 @@ Task = Table(
     Column("task_id", INTEGER, primary_key=True, index=True),
     Column("task_name", VARCHAR(25), nullable=False),
     Column("task_description", VARCHAR(255), nullable=True),
-    Column("task_due_date", DATE, nullable=True),
+    Column("task_due_date", DATE, nullable=False),
     Column("task_finish", INTEGER, nullable=False),
     Column("creator_id", INTEGER, nullable=False),
     Column("belongs_to_repository_id", INTEGER, nullable=False),

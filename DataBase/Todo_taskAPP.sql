@@ -36,7 +36,7 @@ CREATE TABLE User(
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     user_name VARCHAR(50) NOT NULL UNIQUE,
     user_password VARCHAR(64) NOT NULL,
-    user_birthdate DATE
+    user_birthdate DATE NOT NULL
 );
 
 -- Create REPOSITORY table
@@ -52,7 +52,7 @@ CREATE TABLE Task(
     task_id INT AUTO_INCREMENT PRIMARY KEY,
     task_name VARCHAR(25) NOT NULL,
     task_description VARCHAR(255),
-    task_due_date DATE,
+    task_due_date DATE NOT NULL,
     task_finish INT NOT NULL,
     creator_id INT NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES User(user_id),

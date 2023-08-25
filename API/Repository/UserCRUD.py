@@ -14,7 +14,7 @@ async def get_spec_user_by_id(user_id: int):
     return user
 
 
-async def get_spec_user_by_name(user_name: int):
+async def get_spec_user_id_by_name(user_name: int):
     """Get the specific user's info by name"""
 
     stmt = User.select().where(User.c.user_name == user_name)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from schemas import BaseUser, CreateUser, UpdateUser, DeleteUser
+from schemas import BaseUser, CreateUser, UpdateUser, DeleteUser, ShowUserId
 from Repository.UserCRUD import *
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -13,10 +13,10 @@ async def read_user_with__corresponding_id(user_id: int) -> UpdateUser:
 
 
 @router.get("/name/{name}")
-async def read_user_with_corresponding_name(user_name: str) -> UpdateUser:
+async def read_user_id_with_corresponding_name(user_name: str) -> ShowUserId:
     """The endpoint of getting specific user's info by user_name"""
 
-    return await get_spec_user_by_name(user_name)
+    return await get_spec_user_id_by_name(user_name)
 
 
 @router.get("/")

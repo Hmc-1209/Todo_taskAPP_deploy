@@ -1,5 +1,7 @@
+uvicorn
 fastapi[all]
 databases
 sshtunnel
 asyncmy
 passlib[bcrypt]
+python-multipart

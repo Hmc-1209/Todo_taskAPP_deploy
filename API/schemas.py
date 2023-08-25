@@ -12,6 +12,10 @@ class CreateUser(BaseUser):
     user_birthdate: date | None
 
 
+class ShowUserId(BaseModel):
+    user_id: int
+
+
 class UpdateUser(BaseUser):
     user_id: int
     user_birthdate: date | None

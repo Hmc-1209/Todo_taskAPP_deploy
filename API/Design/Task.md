@@ -50,6 +50,7 @@
 >
 >###### Exception handle:
 >Creator id not found -> User with corresponding id does not exist.(404)
+>Repo id not found -> Repository with corresponding id does not exist.(404)
 >Repo's creator not match -> Access denied. You are not allowed to create task for others.
 
 >##### PUT - /task/update
@@ -72,8 +73,7 @@
 >##### DELETE - /task/delete
 >###### Delete task.
 >body: {
->&emsp; task_id: xxx,
->&emsp; creator_id: xxx,
+>&emsp; task_id: xxx
 >}
 >
 >return: {"detail": "Success:Successfully deleted the task."}

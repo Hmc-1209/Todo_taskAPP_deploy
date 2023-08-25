@@ -6,7 +6,7 @@ router = APIRouter(prefix="/repository", tags=["Repository"])
 
 
 @router.get("/user_id/{user_id}")
-async def get_repos(user_id) -> list[UpdateRepository]:
+async def get_repos(user_id: int) -> list[UpdateRepository]:
     """The endpoint of getting the user's repositories"""
 
     return await get_user_repositories(user_id)
@@ -30,4 +30,4 @@ async def update_repo(repo: UpdateRepository) -> None:
 async def delete_repo(repo: UpdateRepository) -> None:
     """The endpoint of deleting repository"""
 
-    return await delete_repository(repo)
+    return await delete_spec_repository(repo)

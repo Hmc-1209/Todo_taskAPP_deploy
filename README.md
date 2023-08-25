@@ -6,4 +6,4 @@ Contributor : Danny Ho
 #####  An app, an api and a database shown as below :
 #####   - React APP (Deploy with Docker)
 #####   - FastAPI (Deploy with Docker)
-#####   - MariaDB (Deploy on Raspberri Pi 4B)
+#####   - MariaDB (Deploy on Raspberry Pi 4B)

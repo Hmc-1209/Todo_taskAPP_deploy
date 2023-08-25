@@ -6,14 +6,14 @@ router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.get("/id/{id}")
-async def read_user_with__corresponding_id(user_id) -> UpdateUser:
+async def read_user_with__corresponding_id(user_id: int) -> UpdateUser:
     """The endpoint of getting specific user's info by user_id"""
 
     return await get_spec_user_by_id(user_id)
 
 
 @router.get("/name/{name}")
-async def read_user_with_corresponding_name(user_name) -> UpdateUser:
+async def read_user_with_corresponding_name(user_name: str) -> UpdateUser:
     """The endpoint of getting specific user's info by user_name"""
 
     return await get_spec_user_by_name(user_name)

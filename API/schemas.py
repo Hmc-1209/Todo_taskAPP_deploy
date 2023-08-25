@@ -64,16 +64,23 @@ class UpdateTask(ReadTasksUsingUserId):
 
 class DeleteTask(BaseModel):
     task_id: int
-    creator_id: int
+
 
 # ----- Schemas for Tag table -----
 
 
 class BaseTag(BaseModel):
-    tag_id: str
     tag_name: str
 
 
 class CreateTag(BaseTag):
     creator_id: int
     belongs_to_repository_id: int
+
+
+class UpdateTag(BaseTag):
+    tag_id: int
+
+
+class DeleteTag(BaseModel):
+    tag_id: int

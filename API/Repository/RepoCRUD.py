@@ -54,7 +54,7 @@ async def update_repository_info(repo: UpdateRepository):
     return {"detail": "Success:Successfully updated the repository."}
 
 
-async def delete_repository(repo: UpdateRepository):
+async def delete_spec_repository(repo: UpdateRepository):
     """Delete the specific repository"""
 
     await check_repo(repo.repo_id)

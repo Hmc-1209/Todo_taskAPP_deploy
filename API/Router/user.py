@@ -1,12 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from typing import Annotated
 from schemas import BaseUser, CreateUser, UpdateUser, DeleteUser, ShowUserId
 from Repository.UserCRUD import *
+from Authentication.JWTtoken import get_current_user
+
 
 router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.get("/id/{id}")
-async def read_user_with__corresponding_id(user_id: int) -> UpdateUser:
+async def read_user_with__corresponding_id(user_id: int, current_user: Annotated[UpdateUser, Depends(get_current_user)]) -> UpdateUser:
     """The endpoint of getting specific user's info by user_id"""
 
     return await get_spec_user_by_id(user_id)

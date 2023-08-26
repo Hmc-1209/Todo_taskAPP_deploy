@@ -3,3 +3,5 @@ __pycache__/
 DataBase/config.sql
 API/config.py
 .DS_Store
+venv/
+API/Authentication/config.py

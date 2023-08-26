@@ -88,3 +88,11 @@ class UpdateTag(BaseTag):
 
 class DeleteTag(BaseModel):
     tag_id: int
+
+
+# ----- Schemas for Tag table -----
+
+
+class BaseToken(BaseModel):
+    user_name: str
+    user_password: str

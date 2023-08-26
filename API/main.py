@@ -9,6 +9,7 @@ app.include_router(Router.user)
 app.include_router(Router.repository)
 app.include_router(Router.task)
 app.include_router(Router.tag)
+app.include_router(Router.token)
 
 
 @app.on_event("startup")

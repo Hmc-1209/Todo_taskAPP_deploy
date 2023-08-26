@@ -8,5 +8,5 @@ def hashing_password(pwd):
     return pwd_obj.hash(pwd)
 
 
-def verify_password(req_pew, pwd):
-    return pwd_obj.verify(req_pew, pwd)
+def verify_password(req_pwd, pwd):
+    return pwd_obj.verify(req_pwd, pwd)

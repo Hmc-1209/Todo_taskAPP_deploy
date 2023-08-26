@@ -5,3 +5,4 @@ sshtunnel
 asyncmy
 passlib[bcrypt]
 python-multipart
+python-jose

@@ -1,7 +1,5 @@
-from models import User, Repository, Task
+from models import User, Repository
 from database import db
-from fastapi import HTTPException, status
-
 from Exceptions import not_found
 
 

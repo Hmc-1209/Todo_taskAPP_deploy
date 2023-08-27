@@ -1,10 +1,11 @@
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from datetime import timedelta, datetime
 from jose import jwt
-from schemas import BaseToken
-from Authentication.hashing import verify_password
+
 from Repository.CommonCRUD import check_user
-from Authentication.OAuth2 import oauth2_access_token_scheme, oauth2_refresh_token_scheme
+from Authentication.hashing import verify_password
+from Authentication.OAuth2 import oauth2_access_token_scheme
 from Authentication.config import ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY, ALGORITHM
 from Exceptions import *
 

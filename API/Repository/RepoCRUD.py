@@ -1,8 +1,9 @@
-from models import Repository, User
 from database import db
 from fastapi import HTTPException, status
+
+from models import Repository
 from schemas import CreateRepository, UpdateRepository
-from Repository.CommonCRUD import check_user, check_repo
+from Repository.CommonCRUD import check_user
 
 
 async def get_user_repositories(user_id: int):

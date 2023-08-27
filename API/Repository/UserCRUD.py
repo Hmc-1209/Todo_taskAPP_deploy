@@ -1,9 +1,10 @@
-from models import User
-from database import db
 from fastapi import HTTPException, status
+from database import db
+
+from models import User
 from schemas import CreateUser, UpdateUser, DeleteUser
-from Authentication import hashing
 from Repository.CommonCRUD import *
+from Authentication import hashing
 
 
 async def get_spec_user_by_id(user_id: int):

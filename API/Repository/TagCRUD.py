@@ -1,6 +1,7 @@
-from models import User, Repository, Tag
-from database import db
 from fastapi import HTTPException, status
+from database import db
+
+from models import Repository, Tag
 from schemas import CreateTag, UpdateTag, DeleteTag
 from Repository.CommonCRUD import check_user, check_repo
 from Exceptions import not_found

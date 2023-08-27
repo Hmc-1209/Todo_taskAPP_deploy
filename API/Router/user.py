@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
+
 from schemas import CreateUser, UpdateUser, DeleteUser, ShowUserId
-from Repository.UserCRUD import *
+from Repository.UserCRUD import get_spec_user_by_id, get_spec_user_id_by_name, get_all_user, create_new_user, update_user_info, delete_spec_user
 from Authentication.JWTtoken import get_current_user
 
 
@@ -34,8 +35,9 @@ async def read_user_id_with_corresponding_name(user_name: str, current_user: Ann
 async def read_all_user(current_user: Annotated[UpdateUser, Depends(get_current_user)]) -> list[UpdateUser]:
     """The endpoint of getting all users' info"""
 
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                        detail="Access denied. You do not have permission to read all users' info.")
+    if current_user.user_id != 0:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Access denied. You do not have permission to read all users' info.")
 
     return await get_all_user()
 

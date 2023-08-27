@@ -1,6 +1,7 @@
-from models import User, Repository, Task
-from database import db
 from fastapi import HTTPException, status
+from database import db
+
+from models import Task
 from schemas import DeleteTask, CreateTask, UpdateTask
 from Repository.CommonCRUD import check_user, check_repo
 from Exceptions import not_found

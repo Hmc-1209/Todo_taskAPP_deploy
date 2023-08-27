@@ -1,7 +1,8 @@
-from models import User
-from database import db
 from fastapi import HTTPException, status
+from database import db
 from jose import jwt
+
+from models import User
 from Repository.CommonCRUD import check_user
 from Authentication import JWTtoken
 from Authentication.config import ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY, ALGORITHM

@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
-from schemas import BaseToken
-from Repository.TokenCRUD import *
 
+from Repository.TokenCRUD import generate_access_token, generate_refresh_token, validate_access_token, validate_refresh_token
 
 router = APIRouter(prefix="/token", tags=["Token"])
 

@@ -82,7 +82,7 @@ async def update_user_info(user: UpdateUser):
     user_info = await check_user(user.user_id)
 
     # Check the user's new name already exist or not
-    if check_user_existence(user.user_name):
+    if await check_user_existence(user.user_name):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The username has been used.",
@@ -94,8 +94,9 @@ async def update_user_info(user: UpdateUser):
         .where(User.c.user_id == user_info.user_id)
     )
 
-    # If exception
-    if await db.execute(stmt):
+    result = await db.execute(stmt)
+
+    if not result:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot update user's info.",
@@ -109,9 +110,13 @@ async def delete_spec_user(user: DeleteUser):
 
     user_info = await check_user(user.user_id)
 
+    if user_info.user_name != user.user_name:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="User with corresponding name does not exist.")
+
     # Check the password of user
-    if hashing.verify_password(
-        user_info.user_password, hashing.hashing_password(user.user_password)
+    if not hashing.verify_password(
+        user.user_password, user_info.user_password
     ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

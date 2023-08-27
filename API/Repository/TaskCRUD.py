@@ -3,6 +3,7 @@ from database import db
 from fastapi import HTTPException, status
 from schemas import DeleteTask, CreateTask, UpdateTask
 from Repository.CommonCRUD import check_user, check_repo
+from Exceptions import not_found
 
 
 async def get_tasks_by_user_id(user_id: int):
@@ -18,8 +19,6 @@ async def get_tasks_by_user_id(user_id: int):
 
 async def get_tasks_by_repo_id(repo_id: int):
     """Get all the task belongs to specific repository"""
-
-    await check_repo(repo_id)
 
     stmt = Task.select().where(Task.c.belongs_to_repository_id == repo_id)
     tasks = await db.fetch_all(stmt)
@@ -58,6 +57,20 @@ async def update_task_info(task: UpdateTask):
     await check_user(task.creator_id)
     await check_repo(task.belongs_to_repository_id)
 
+    stmt = Task.select().where(Task.c.task_id == task.task_id)
+    origin_task = await db.fetch_one(stmt)
+
+    if not origin_task:
+        raise not_found("Task")
+
+    if origin_task.creator_id != task.creator_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Access denied. You are not allowed to update task for others.")
+
+    if origin_task.belongs_to_repository_id != task.belongs_to_repository_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Action failed. Wrong repository id with corresponding task.")
+
     stmt = (
         Task.update()
         .values(
@@ -94,3 +107,14 @@ async def delete_spec_task(task: DeleteTask):
         )
 
     return {"detail": "Success:Successfully deleted the task."}
+
+
+async def find_task_creator(task_id):
+
+    stmt = Task.select().where(Task.c.task_id == task_id)
+    task = await db.fetch_one(stmt)
+
+    if not task:
+        raise not_found("Task")
+
+    return task.creator_id

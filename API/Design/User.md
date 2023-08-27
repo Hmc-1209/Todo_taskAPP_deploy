@@ -11,6 +11,7 @@
 >}
 >###### Exception handle:
 >User not found -> User with corresponding id does not exist.(404)
+>User id doesn't belongs to user -> Access denied. You are not allowed to read other user's info.
 
 >##### GET - /user/name/{name}
 >###### Read the specific user info by name.
@@ -23,6 +24,7 @@
 >}
 >###### Exception handle:
 >User not found -> User with corresponding name does not exist.(404)
+>User id doesn't belongs to user -> Access denied. You are not allowed to read other user's info.
 
 >##### GET - /user/
 >###### Read all users' info.
@@ -38,6 +40,7 @@
 >]
 >###### Exception handle:
 >No user -> No user found in database.(404)
+> -> Access denied. You do not have permission to read all users' info.
 
 >##### POST - /user/create/
 >###### Create new user.
@@ -61,6 +64,7 @@
 >return: {"detail":"Success:Successfully updated the user's info."}
 >###### Exception handle:
 >Repeated name -> The username has been used.(403)
+>User id doesn't belongs to user -> Access denied. You are not allowed to update other user's info.
 
 >##### DELETE - /user/delete/
 >###### Delete the user.
@@ -74,3 +78,4 @@
 >###### Exception handle:
 >Unknown user id -> User with corresponding id does not exist.(404)
 >Wrong password -> Password incorrect.(403)
+>User id doesn't belongs to user -> Access denied. You are not allowed to delete other user.

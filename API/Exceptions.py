@@ -8,3 +8,14 @@ user_not_found = HTTPException(
 
 password_incorrect = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND, detail="Password incorrect.")
+
+
+def not_found(name):
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=name + " with corresponding id does not exist."
+    )
+
+
+def access_denied_not_allowed(action: str, type: str):
+    return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied. You are not allowed to " + action + " other user's " + type + ".")

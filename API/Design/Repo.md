@@ -13,6 +13,7 @@
 >]
 >###### Exception handle:
 >User not found -> User with corresponding id does not exist.(404)
+>Reading repo with wrong user id -> Access denied, you are not allowed to read repository from other user.(403)
 
 >##### POST - /repository/create
 >###### Create new repositorie.
@@ -23,8 +24,8 @@
 >
 >return: {"detailed":"Success:Successfully created new repository.}
 >###### Exception handle:
->Creating repo with wrong user id -> Access denied, you are not allowed to create repository for other user.(403)
 >User not found -> User with corresponding id does not exist.(404)
+>Creating repo with wrong user id -> Access denied, you are not allowed to create repository for other user.(403)
 
 >##### PUT - /repository/update
 >###### Update the repositorie name.

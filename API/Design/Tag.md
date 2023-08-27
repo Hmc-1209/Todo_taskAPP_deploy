@@ -29,7 +29,7 @@
 >###### Exception handle:
 >Creator id not found -> User with corresponding id does not exist.(404)
 >Repo id not found -> Repository with corresponding id does not exist.(404)
->Tag's creator not match -> Access denied. You are not allowed to create tag for others.
+>Tag's creator not match -> Access denied. You are not allowed to create tag for other user.
 
 >##### PUT - /tag/update
 >###### Update tag.

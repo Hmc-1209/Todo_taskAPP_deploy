@@ -16,7 +16,7 @@
 >]
 >###### Exception handle:
 >User not found -> User with corresponding id does not exist.(404)
->Creator not match -> Access denied. You are not allowed to read other user's tasks.
+>Creator not match -> Access denied. You are not allowed to read other user's tasks.(403)
 
 >##### GET - /task/repo_id/{repo_id}
 >###### Read all tasks by repo id.
@@ -34,7 +34,7 @@
 >]
 >###### Exception handle:
 >Repo id not found -> Repo with corresponding id does not exist.(404)
->Repo's creator not match -> Access denied. You are not allowed to read other user's tasks.
+>Repo's creator not match -> Access denied. You are not allowed to read other user's tasks.(403)
 
 
 >##### POST - /task/create
@@ -51,7 +51,7 @@
 >###### Exception handle:
 >Creator id not found -> User with corresponding id does not exist.(404)
 >Repo id not found -> Repository with corresponding id does not exist.(404)
->Repo's creator not match -> Access denied. You are not allowed to create task for others.
+>Repo's creator not match -> Access denied. You are not allowed to create task for others.(403)
 
 >##### PUT - /task/update
 >###### Update task.
@@ -68,7 +68,8 @@
 >
 >###### Exception handle:
 >Task id not found -> Task with corresponding id does not exist.(404)
->Task's creator not match -> Access denied. You are not allowed to update other user's tasks.
+>Task's creator not match -> Access denied. You are not allowed to update other user's tasks.(403)
+>Task's repo not match -> Action failed. Wrong repository id with corresponding task.(400)
 
 >##### DELETE - /task/delete
 >###### Delete task.
@@ -80,4 +81,4 @@
 >
 >###### Exception handle:
 >Task id not found -> Task with corresponding id does not exist.(404)
->Task's creator not match -> Access denied. You are not allowed to delete other user's tasks.
+>Task's creator not match -> Access denied. You are not allowed to delete other user's tasks.(403)

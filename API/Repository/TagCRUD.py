@@ -3,6 +3,7 @@ from database import db
 from fastapi import HTTPException, status
 from schemas import CreateTag, UpdateTag, DeleteTag
 from Repository.CommonCRUD import check_user, check_repo
+from Exceptions import not_found
 
 
 async def get_tags_by_repo_id(repo_id: int):
@@ -74,3 +75,23 @@ async def delete_spec_tag(tag: DeleteTag):
         )
 
     return {"detail": "Success:Successfully deleted the tag."}
+
+
+async def find_tag_belongs_repo_creator(repo_id):
+    stmt = Repository.select().where(Repository.c.repo_id == repo_id)
+    repo = await db.fetch_one(stmt)
+
+    if not repo:
+        raise not_found("Repository")
+
+    return repo.creator_id
+
+
+async def find_tag_creator(tag_id):
+    stmt = Tag.select().where(Tag.c.tag_id == tag_id)
+    tag = await db.fetch_one(stmt)
+
+    if not tag:
+        raise not_found("Tag")
+
+    return tag.creator_id

@@ -36,8 +36,6 @@ async def create_new_repository(new_repo: CreateRepository):
 async def update_repository_info(repo: UpdateRepository):
     """Updating the repository info"""
 
-    await check_repo(repo.repo_id)
-
     stmt = (
         Repository.update()
         .values(repo_name=repo.repo_name)
@@ -56,8 +54,6 @@ async def update_repository_info(repo: UpdateRepository):
 
 async def delete_spec_repository(repo: UpdateRepository):
     """Delete the specific repository"""
-
-    await check_repo(repo.repo_id)
 
     stmt = Repository.delete().where(Repository.c.repo_id == repo.repo_id)
     if not await db.execute(stmt):

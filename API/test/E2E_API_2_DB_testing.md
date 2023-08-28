@@ -8,7 +8,7 @@
 #### Overall test result - 
 | Total Scenarios | Passes | Pass rate |
 |-----------------|--------|-----------|
-| 70              |        |           |
+| 71              |        |           |
 
 #### Scenarios - 
 0. Create new user with name "User1", password "User1", birth date "2023-01-01"  

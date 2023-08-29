@@ -13,7 +13,9 @@ async def get_user_repositories(user_id: int):
 
     stmt = Repository.select().where(Repository.c.creator_id == user_id)
 
-    return await db.fetch_all(stmt)
+    repos = await db.fetch_all(stmt)
+
+    return repos
 
 
 async def create_new_repository(new_repo: CreateRepository):

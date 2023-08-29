@@ -1,6 +1,6 @@
 #### API design for Repository table
 
->##### GET - /repository/user_id/{user_id}
+>##### GET - /repository/id/{id}
 >###### Read all repositories of specific user using user_id.
 >body: N / A  
 >

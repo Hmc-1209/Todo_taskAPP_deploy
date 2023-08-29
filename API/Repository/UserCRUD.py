@@ -7,14 +7,6 @@ from Repository.CommonCRUD import *
 from Authentication import hashing
 
 
-async def get_spec_user_by_id(user_id: int):
-    """Get the specific user's info by id"""
-
-    user = await check_user(user_id)
-
-    return user
-
-
 async def get_spec_user_id_by_name(user_name: int):
     """Get the specific user's info by name"""
 
@@ -77,13 +69,11 @@ async def create_new_user(user: CreateUser):
     return {"detail": "Success:Successfully created the user."}
 
 
-async def update_user_info(user: UpdateUser):
+async def update_user_info(user: UpdateUser, origin_user_name: str):
     """Chenge the info of corresponding user id"""
 
-    user_info = await check_user(user.user_id)
-
     # Check the user's new name already exist or not
-    if user.user_name != user_info.user_name and await check_user_existence(
+    if user.user_name != origin_user_name and await check_user_existence(
         user.user_name
     ):
         raise HTTPException(
@@ -94,7 +84,7 @@ async def update_user_info(user: UpdateUser):
     stmt = (
         User.update()
         .values(user_name=user.user_name, user_birthdate=user.user_birthdate)
-        .where(User.c.user_id == user_info.user_id)
+        .where(User.c.user_id == user.user_id)
     )
 
     result = await db.execute(stmt)
@@ -108,10 +98,8 @@ async def update_user_info(user: UpdateUser):
     return {"detail": "Success:Successfully updated the user's info."}
 
 
-async def delete_spec_user(user: DeleteUser):
+async def delete_spec_user(user: DeleteUser, user_info):
     """Delete the user with corresponding user id"""
-
-    user_info = await check_user(user.user_id)
 
     if user_info.user_name != user.user_name:
         raise HTTPException(

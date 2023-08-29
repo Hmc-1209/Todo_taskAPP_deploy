@@ -8,7 +8,7 @@ from Repository.RepoCRUD import (
     update_repository_info,
     delete_spec_repository,
 )
-from Repository.CommonCRUD import check_repo
+from Repository.CommonCRUD import check_repo, check_user
 from Authentication.JWTtoken import get_current_user
 from Exceptions import access_denied_not_allowed
 
@@ -21,6 +21,8 @@ async def get_repos(
 ) -> list[UpdateRepository]:
     """The endpoint of getting the user's repositories"""
 
+    await check_user(user_id)
+
     if user_id != current_user.user_id:
         raise access_denied_not_allowed("read", "repositories")
     return await get_user_repositories(user_id)
@@ -32,6 +34,8 @@ async def create_repo(
     current_user: Annotated[UpdateUser, Depends(get_current_user)],
 ) -> None:
     """The endpoint of getting the user's repositories"""
+
+    await check_user(new_repo.creator_id)
 
     if new_repo.creator_id != current_user.user_id:
         raise HTTPException(

@@ -21,8 +21,6 @@ async def get_user_repositories(user_id: int):
 async def create_new_repository(new_repo: CreateRepository):
     """Create the new repository for user"""
 
-    await check_user(new_repo.creator_id)
-
     stmt = Repository.insert().values(
         repo_name=new_repo.repo_name, creator_id=new_repo.creator_id
     )

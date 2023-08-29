@@ -1,6 +1,6 @@
 #### API designs for Task table
    
->##### GET - /task/user_id/{user_id}
+>##### GET - /task/user_id/{id}
 >###### Read all tasks by user id.
 >body: N / A  
 >
@@ -18,7 +18,7 @@
 >User not found -> User with corresponding id does not exist.(404)
 >Creator not match -> Access denied. You are not allowed to read other user's tasks.(403)
 
->##### GET - /task/repo_id/{repo_id}
+>##### GET - /task/repo_id/{id}
 >###### Read all tasks by repo id.
 >body: N / A  
 >

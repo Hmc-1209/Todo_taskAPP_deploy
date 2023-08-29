@@ -30,9 +30,6 @@ async def get_tasks_by_repo_id(repo_id: int):
 async def create_new_task(task: CreateTask):
     """Create new task for specific repo with specific user id"""
 
-    await check_user(task.creator_id)
-    await check_repo(task.belongs_to_repository_id)
-
     stmt = Task.insert().values(
         task_name=task.task_name,
         task_description=task.task_description,

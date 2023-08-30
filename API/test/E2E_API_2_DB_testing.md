@@ -8,7 +8,7 @@
 #### Overall test result - 
 | Total Scenarios | Passes | Pass rate |
 |-----------------|--------|-----------|
-| 72              |        |           |
+| 76              | 76     | 100%      |
 
 #### Scenarios -
 1. Create new user with name "User1", password "User1", birth date "2023-01-01"
@@ -135,103 +135,34 @@
 
 62. Create tag "TestTag" using unknown user id -1, belongs to TestRepo2's repo id (Token✅)
 
-63. Read all tags using TestRepo2's repo id (Token❎)
+63. Create tag "TestTag" using User1's user id, belongs to repo id 1 (Token✅)
 
-64. Read all tags using TestRepo2's repo id (Token✅)
+64. Create tag "TestTag" using User1's user id, belongs to repo id -1 (Token✅)
 
-65. Read all tags using repo id 1 (Token✅)
+65. Read all tags using TestRepo2's repo id (Token❎)
 
-66. Read all tags using unknown repo id -1 (Token✅)
+66. Read all tags using TestRepo2's repo id (Token✅)
 
-67. Update tag using TestTag's tag id (Token❎)
+67. Read all tags using repo id 1 (Token✅)
 
-68. Update tag using TestTag's tag id (Token✅)
+68. Read all tags using unknown repo id -1 (Token✅)
 
-69. Update tag using tag id 1 (Token✅)
+69. Update tag using TestTag's tag id (Token❎)
 
-70. Update tag using unknown tag id -1 (Token✅)
+70. Update tag using TestTag's tag id (Token✅)
 
-71. Delete tag using TestTag's tag id (Token❎)
+71. Update tag using tag id 1 (Token✅)
 
-72. Delete tag using TestTag's tag id (Token✅)
+72. Update tag using unknown tag id -1 (Token✅)
 
-73. Delete tag using tag id 1 (Token✅)
+73. Delete tag using TestTag's tag id (Token❎)
 
-74. Delete tag using unknown tag id -1 (Token✅)
+74. Delete tag using TestTag's tag id (Token✅)
+
+75. Delete tag using tag id 1 (Token✅)
+
+76. Delete tag using unknown tag id -1 (Token✅)
 
 
 #### Testing result - 
-| Scenario | Step(s) | Expected Output | Output | Result |
-|----------|---------|-----------------|--------|--------|
-| 1        |         |                 |        |        |
-| 2        |         |                 |        |        |
-| 3        |         |                 |        |        |
-| 4        |         |                 |        |        |
-| 5        |         |                 |        |        |
-| 6        |         |                 |        |        |
-| 7        |         |                 |        |        |
-| 8        |         |                 |        |        |
-| 9        |         |                 |        |        |
-| 10       |         |                 |        |        |
-| 11       |         |                 |        |        |
-| 12       |         |                 |        |        |
-| 13       |         |                 |        |        |
-| 14       |         |                 |        |        |
-| 15       |         |                 |        |        |
-| 16       |         |                 |        |        |
-| 17       |         |                 |        |        |
-| 18       |         |                 |        |        |
-| 19       |         |                 |        |        |
-| 20       |         |                 |        |        |
-| 21       |         |                 |        |        |
-| 22       |         |                 |        |        |
-| 23       |         |                 |        |        |
-| 24       |         |                 |        |        |
-| 25       |         |                 |        |        |
-| 26       |         |                 |        |        |
-| 27       |         |                 |        |        |
-| 28       |         |                 |        |        |
-| 29       |         |                 |        |        |
-| 30       |         |                 |        |        |
-| 31       |         |                 |        |        |
-| 32       |         |                 |        |        |
-| 33       |         |                 |        |        |
-| 34       |         |                 |        |        |
-| 35       |         |                 |        |        |
-| 36       |         |                 |        |        |
-| 37       |         |                 |        |        |
-| 38       |         |                 |        |        |
-| 39       |         |                 |        |        |
-| 40       |         |                 |        |        |
-| 41       |         |                 |        |        |
-| 42       |         |                 |        |        |
-| 43       |         |                 |        |        |
-| 44       |         |                 |        |        |
-| 45       |         |                 |        |        |
-| 46       |         |                 |        |        |
-| 47       |         |                 |        |        |
-| 48       |         |                 |        |        |
-| 49       |         |                 |        |        |
-| 50       |         |                 |        |        |
-| 51       |         |                 |        |        |
-| 52       |         |                 |        |        |
-| 53       |         |                 |        |        |
-| 54       |         |                 |        |        |
-| 55       |         |                 |        |        |
-| 56       |         |                 |        |        |
-| 57       |         |                 |        |        |
-| 58       |         |                 |        |        |
-| 59       |         |                 |        |        |
-| 60       |         |                 |        |        |
-| 61       |         |                 |        |        |
-| 62       |         |                 |        |        |
-| 63       |         |                 |        |        |
-| 64       |         |                 |        |        |
-| 65       |         |                 |        |        |
-| 66       |         |                 |        |        |
-| 67       |         |                 |        |        |
-| 68       |         |                 |        |        |
-| 69       |         |                 |        |        |
-| 70       |         |                 |        |        |
-| 71       |         |                 |        |        |
-| 72       |         |                 |        |        |
+[API test file](./E2E_API_2_DB_testing.xlsx)

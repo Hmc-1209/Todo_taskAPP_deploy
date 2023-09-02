@@ -1,3 +1,4 @@
+PyQt5==5.14.0
 uvicorn
 fastapi[all]
 databases

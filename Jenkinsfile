@@ -18,6 +18,7 @@ pipeline {
                         git pull
                         docker build -t todo_task_app_api .
                         docker run -d --name todo_task_app_api -p 8002:8002 todo_task_app_api
+                        docker image prune
                     "
                     '''
                 }

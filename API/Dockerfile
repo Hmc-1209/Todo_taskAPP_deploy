@@ -10,20 +10,12 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup-init.sh 
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN echo $PATH
-
-RUN rustup --version
-
 RUN rustup toolchain install stable-arm-unknown-linux-gnueabihf && \
     rustup default stable-arm-unknown-linux-gnueabihf
-
-RUN which rustc && which cargo
 
 RUN dpkg --add-architecture armhf && \
     apt-get update && \
     apt-get install -y libc6:armhf
-
-RUN rustc --version && cargo --version
 
 RUN pip install --upgrade pip
 

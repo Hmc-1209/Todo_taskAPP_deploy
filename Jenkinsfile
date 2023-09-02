@@ -17,7 +17,7 @@ pipeline {
                         cd ~/Documents/Todo_taskAPP_server/API
                         git pull
                         docker build -t todo_task_app_api .
-                        docker run -d --name todo_task_app_api -p 8002:80 todo_task_app_api
+                        docker run -d --name todo_task_app_api -p 8002:8002 todo_task_app_api
                     "
                     '''
                 }

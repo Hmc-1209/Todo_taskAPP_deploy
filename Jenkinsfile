@@ -2,34 +2,29 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Connect to Remote Host') {
             steps {
-                sshagent(['Raspi-dannyho']) {
-                    script {
-                        def secretFileAPI = credentials('Todo_taskApp_server_API')
-                        def secretFileAuth = credentials('Todo_taskApp_server_API_auth')
+                withCredentials([file(credentialsId: 'Todo_taskApp_server_API', variable: 'apiSecretFile'),
+                                file(credentialsId: 'Todo_taskApp_server_API_auth', variable: 'authSecretFile')]) {
+                    sshagent(['Raspi-dannyho']) {
+                        sh '''
+                        ssh dannyho@122.116.20.182 "
+                            docker stop todo_task_app_api || true
+                            docker rm todo_task_app_api || true
 
-                        sh "scp ${secretFileAPI} dannyho@122.116.20.182:~/Documents/Todo_taskAPP_server/API/"
-                        sh "scp ${secretFileAuth} dannyho@122.116.20.182:~/Documents/Todo_taskAPP_server/API/Authentication/"
+                            # Copy the secret files
+                            scp $apiSecretFile dannyho@122.116.20.182:~/Documents/Todo_taskAPP_server/API/config.py
+                            scp $authSecretFile dannyho@122.116.20.182:~/Documents/Todo_taskAPP_server/API/Authentication/config.py
 
-                        if (sh(script: """
-                            ssh dannyho@122.116.20.182 "
-                                if [ \"\$(docker ps -q -f name=todo_task_app_api)\" ]; then
-                                    docker stop todo_task_app_api
-                                    docker rm todo_task_app_api
-                                elif [ \"\$(docker ps -aq -f name=todo_task_app_api)\" ]; then
-                                    docker rm todo_task_app_api
-                                fi
+                            cd ~/Documents/Todo_taskAPP_server
+                            git pull
+                            cd API
+                            docker build -t todo_task_app_api .
+                            docker run -d --name todo_task_app_api -p 8002:8002 todo_task_app_api
+                            docker prune
 
-                                cd ~/Documents/Todo_taskAPP_server/API
-                                git pull
-                                docker build -t todo_task_app_api .
-                                docker run -d --name todo_task_app_api -p 8002:8002 todo_task_app_api
-                                docker image prune -y
-                            "
-                        """.stripIndent()) != 0) {
-                            error("Deployment failed")
-                        }
+                        "
+                        '''
                     }
                 }
             }

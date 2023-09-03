@@ -1,8 +1,10 @@
 path="http://122.116.20.182:8002"
 
 #
-#   Initial actions : remove test user and recreate it
+#   Initial actions : remove test user's tag, task, repo and user, then recreate it (They will only exist one at a time, so there is no need to delete with loop.)
 #
+
+# Get the test user's access token
 response=$(curl -s -X POST \
   "${path}/token/access_token" \
   -H "accept: application/json" \
@@ -16,6 +18,7 @@ if [ -z "$user_token" ]; then
   echo "Failed to get test user(User1)'s access token."
   exit 1
 fi
+# Get the test user's id
 response=$(curl -s -X GET \
   "${path}/user/name/{name}?user_name=User1" \
   -H "accept: application/json" \
@@ -27,6 +30,97 @@ if [ -z "$user_id" ]; then
   echo "Failed to get test user's id 'User1'."
   exit 1
 fi
+# Read test user's repo
+response=$(curl -s -X GET \
+  "${path}/repository/id/{id}?user_id=${user_id}" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer ${user_token}"
+)
+repo_name=$(echo "$response" | grep "repo_name")
+repo_name=$(echo "$repo_name" | awk -F'"' '{print $4}')
+repo_id=$(echo "$response" | grep "repo_id")
+repo_id=$(echo "$repo_id" | awk -F'"' '{print $7}' | awk -F':' '{print $2}' | awk -F'}' '{print $1}')
+if [ -z "$repo_name" ] || [ -z "$repo_id" ]; then
+  echo ${response}
+  echo "Failed to read test user's repo."
+  exit 1
+fi
+# Read test user's task
+response=$(curl -s -X GET \
+  "${path}/task/user_id/{id}?user_id=${user_id}" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer ${user_token}"
+)
+failed_message=$(echo "$response" | grep "detail")
+failed_message=$(echo "$failed_message" | awk -F'"' '{print $4}')
+task_id=$(echo "$response" | grep "task_id")
+task_id=$(echo "$task_id" | awk -F'"' '{print $17}' | awk -F':' '{print $2}' | awk -F',' '{print $1}')
+if [ "$failed_message" ]; then
+  echo ${response}
+  echo "Failed to get test user's tasks."
+  exit 1
+fi
+# Read test user's tag
+response=$(curl -s -X GET \
+  "${path}/tag/repo_id/{id}?repo_id=${repo_id}" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer ${user_token}"
+)
+failed_message=$(echo "$response" | grep "detail")
+failed_message=$(echo "$failed_message" | awk -F'"' '{print $4}')
+tag_id=$(echo "$response" | grep "tag_id")
+tag_id=$(echo "$tag_id" | awk -F'"' '{print $7}' | awk -F':' '{print $2}' | awk -F'}' '{print $1}')
+if [ "$failed_message" ]; then
+  echo ${response}
+  echo "Failed to read test user's tag."
+  exit 1
+fi
+# Delete task if it exist
+if [ "$task_id" ]; then
+  response=$(curl -s -X DELETE \
+    "${path}/task/delete" \
+    -H "accept: application/json" \
+    -H "Content-Type: application/json"  \
+    -d '{"task_id": "'${task_id}'"}' \
+    -H "Authorization: Bearer ${user_token}"
+  )
+  if [ "$response" != '{"detail":"Success:Successfully deleted the task."}' ]; then
+    echo ${response}
+    echo "Failed to delete test user's task."
+    exit 1
+  fi
+fi
+# Delete tag if it exist
+if [ "$tag_id" ]; then
+  response=$(curl -s -X DELETE \
+    "${path}/tag/delete" \
+    -H "accept: application/json" \
+    -H "Content-Type: application/json" \
+    -d '{"tag_id": "'${tag_id}'"}' \
+    -H "Authorization: Bearer ${user_token}"
+  )
+  if [ "$response" != '{"detail":"Success:Successfully deleted the tag."}' ]; then
+    echo ${response}
+    echo "Failed to delete test user's tag."
+    exit 1
+  fi
+fi
+# Delete repo if it exist
+if [ "$repo_id" ]; then
+  response=$(curl -s -X DELETE \
+    "${path}/repository/delete" \
+    -H "accept: application/json" \
+    -H "Content-Type: application/json"  \
+    -d '{"repo_name": "TestRepo2", "repo_id": '${repo_id}'}' \
+    -H "Authorization: Bearer ${user_token}"
+  )
+  if [ "$response" != '{"detail":"Success:Successfully deleted the repository."}' ]; then
+    echo ${response}
+    echo "Failed to delete test user's repo."
+    exit 1
+  fi
+fi
+# Delete test user
 response=$(curl -s -X DELETE \
   "http://122.116.20.182:8002/user/delete" \
   -H "accept: application/json" \

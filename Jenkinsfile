@@ -30,7 +30,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
+                sh'''
+                    cd ~/Documents/Todo_taskAPP_server/API/test
+                    ./Deploy_test.sh
+                '''
             }
         }
 

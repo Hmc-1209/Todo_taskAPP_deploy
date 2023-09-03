@@ -3,6 +3,7 @@ from typing import Annotated
 
 from schemas import UpdateTag, CreateTag, DeleteTag, UpdateUser
 from Repository.TagCRUD import find_tag_belongs_repo_creator, get_tags_by_repo_id, create_new_tag, find_tag_creator, update_tag_info, delete_spec_tag
+from Repository.CommonCRUD import check_user, check_repo
 from Authentication.JWTtoken import get_current_user
 from Exceptions import access_denied_not_allowed
 
@@ -22,6 +23,9 @@ async def get_tags_using_repo_id(repo_id: int, current_user: Annotated[UpdateUse
 @router.post("/create")
 async def create_new_tag_in_repository(tag: CreateTag, current_user: Annotated[UpdateUser, Depends(get_current_user)]) -> None:
     """The endpoint of creating new tag in specific repository"""
+
+    await check_user(tag.creator_id)
+    await check_repo(tag.belongs_to_repository_id)
 
     if (tag.creator_id != current_user.user_id) or await find_tag_belongs_repo_creator(tag.belongs_to_repository_id) != current_user.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,

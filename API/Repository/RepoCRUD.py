@@ -43,9 +43,10 @@ async def update_repository_info(repo: UpdateRepository):
         .where(Repository.c.repo_id == repo.repo_id)
     )
 
-    result = await db.execute(stmt)
+    try:
+        await db.execute(stmt)
 
-    if not result:
+    except:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot update repository."
         )

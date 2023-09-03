@@ -80,9 +80,10 @@ async def update_task_info(task: UpdateTask):
         .where(Task.c.task_id == task.task_id)
     )
 
-    result = await db.execute(stmt)
+    try:
+        await db.execute(stmt)
 
-    if not result:
+    except:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot update task.",

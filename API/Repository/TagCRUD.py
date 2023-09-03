@@ -51,7 +51,11 @@ async def update_tag_info(tag: UpdateTag):
         )
 
     stmt = Tag.update().values(tag_name=tag.tag_name).where(Tag.c.tag_id == tag.tag_id)
-    if not await db.execute(stmt):
+
+    try:
+        await db.execute(stmt)
+
+    except:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot update tag."
         )

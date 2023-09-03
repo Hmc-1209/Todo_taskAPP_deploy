@@ -1,15 +1,69 @@
+#
+#   Initial actions : remove test user and recreate it
+#
+response=$(curl -s -X POST \
+  "http://122.116.20.182:8002/token/access_token" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'username=User1&password=User1'
+)
+user_token=$(echo "$response" | grep "access_token")
+user_token=$(echo "$user_token" | awk -F'"' '{print $4}')
+if [ -z "$user_token" ]; then
+  echo ${response}
+  echo "Failed to get test user(User1)'s access token."
+  exit 1
+fi
+response=$(curl -s -X GET \
+  "http://122.116.20.182:8002/user/name/{name}?user_name=User1" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer ${user_token}"
+)
+user_id=$(echo "$response" | grep "user_id" | awk -F'"' '{print $3}' | awk -F':' '{print $2}' | awk -F'}' '{print $1}')
+if [ -z "$user_id" ]; then
+  echo ${response}
+  echo "Failed to get test user's id 'User1'."
+  exit 1
+fi
+response=$(curl -s -X DELETE \
+  "http://122.116.20.182:8002/user/delete" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json"  \
+  -d '{"user_name": "'"${user_name}"'", "user_id": "'"${user_id}"'", "user_password": "User1"}' \
+  -H "Authorization: Bearer ${user_token}"
+)
+if [ "$response" != '{"detail":"Success:Successfully deleted the user."}' ]; then
+  echo ${response}
+  echo "Failed to delete test user 'User1'."
+  exit 1
+fi
+response=$(curl -s -X POST \
+  "http://122.116.20.182:8002/user/create" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"user_name": "User1", "user_password": "User1", "user_birthdate": "2023-01-01"}'
+)
+if [ "$response" != '{"detail":"Success:Successfully created the user."}' ]; then
+  echo ${response}
+  echo "Failed to recreate test user 'User1'."
+  exit 1
+fi
+
+# --------------------------------- Testing Scenarios ---------------------------------
+
+
 # Scenario 1 - Create User
-# response=$(curl -s -X POST \
-#   "http://122.116.20.182:8002/user/create" \
-#   -H "accept: application/json" \
-#   -H "Content-Type: application/json" \
-#   -d '{"user_name": "User1", "user_password": "User1", "user_birthdate": "2023-01-01"}'
-# )
-# if [ "$response" != '{"detail":"Success:Successfully created the user."}' ]; then
-#   echo ${response}
-#   exit 1
-# fi
-# echo "Scenario 1 - Create User : Pass"
+response=$(curl -s -X POST \
+  "http://122.116.20.182:8002/user/create" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"user_name": "User1", "user_password": "User1", "user_birthdate": "2023-01-01"}'
+)
+if [ "$response" != '{"detail":"Success:Successfully created the user."}' ]; then
+  echo ${response}
+  exit 1
+fi
+echo "Scenario 1 - Create User : Pass"
 
 
 # Scenario 2 - Get User's access token
@@ -192,7 +246,7 @@ fi
 echo "Scenario 14 - Update other's user info (With token) : Pass"
 
 
-# Scenario - 15 Update unknown user info (With token)
+# Scenario 15 - Update unknown user info (With token)
 response=$(curl -s -X PUT \
   "http://122.116.20.182:8002/user/update_info" \
   -H "accept: application/json" \
@@ -204,4 +258,59 @@ if [ "$response" != '{"detail":"User with corresponding id does not exist."}' ];
   echo ${response}
   exit 1
 fi
-echo "Scenario 15 Update unknown user info (With token) : Pass"
+echo "Scenario 15 -  Update unknown user info (With token) : Pass"
+
+
+# Scenario 16 - Delete self user (Without token)
+response=$(curl -s -X DELETE \
+  "http://122.116.20.182:8002/user/delete" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json"  \
+  -d '{"user_name": "'"${user_name}"'", "user_id": "'"${user_id}"'", "user_password": "User1"}'
+)
+if [ "$response" != '{"detail":"Not authenticated"}' ]; then
+  echo ${response}
+  exit 1
+fi
+echo "Scenario 16 -  Delete self user (Without token) : Pass"
+
+
+# Scenario 17 - Delete self user (With token, wrong password)
+response=$(curl -s -X DELETE \
+  "http://122.116.20.182:8002/user/delete" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json"  \
+  -d '{"user_name": "'"${user_name}"'", "user_id": "'"${user_id}"'", "user_password": "User2"}' \
+  -H "Authorization: Bearer ${user_token}"
+)
+if [ "$response" != '{"detail":"Password incorrect."}' ]; then
+  echo ${response}
+  exit 1
+fi
+echo "Scenario 17 -  Delete self user (With token, wrong password) : Pass"
+
+
+# Scenario 18 - Delete self user (With token)
+response=$(curl -s -X DELETE \
+  "http://122.116.20.182:8002/user/delete" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json"  \
+  -d '{"user_name": "'"${user_name}"'", "user_id": "'"${user_id}"'", "user_password": "User1"}' \
+  -H "Authorization: Bearer ${user_token}"
+)
+if [ "$response" != '{"detail":"Success:Successfully deleted the user."}' ]; then
+  echo ${response}
+  exit 1
+fi
+response=$(curl -s -X POST \
+  "http://122.116.20.182:8002/user/create" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"user_name": "User1", "user_password": "User1", "user_birthdate": "2023-01-01"}'
+)
+if [ "$response" != '{"detail":"Success:Successfully created the user."}' ]; then
+  echo ${response}
+  echo "Failed to recreate user."
+  exit 1
+fi
+echo "Scenario 17 -  Delete self user (With token) : Pass"

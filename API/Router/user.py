@@ -74,7 +74,7 @@ async def update_user(user: UpdateUser, current_user: Annotated[UpdateUser, Depe
 async def delete_user(user: DeleteUser, current_user: Annotated[UpdateUser, Depends(get_current_user)]) -> None:
     """The endpoint of deleting a user"""
 
-    user_info = Annotated[DeleteUser, Depends(await check_user(user.user_id))]
+    user_info = await check_user(user.user_id)
 
     if user.user_id != current_user.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,

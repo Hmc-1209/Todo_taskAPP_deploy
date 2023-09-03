@@ -343,7 +343,7 @@ if [ "$response" != '{"detail":"User with corresponding id does not exist."}' ];
   echo ${response}
   exit 1
 fi
-echo "Scenario 15 -  Update unknown user info (With token) : Pass"
+echo "Scenario 15 - Update unknown user info (With token) : Pass"
 
 
 # Scenario 16 - Delete self user (Without token)
@@ -357,7 +357,7 @@ if [ "$response" != '{"detail":"Not authenticated"}' ]; then
   echo ${response}
   exit 1
 fi
-echo "Scenario 16 -  Delete self user (Without token) : Pass"
+echo "Scenario 16 - Delete self user (Without token) : Pass"
 
 
 # Scenario 17 - Delete self user (With token, wrong password)
@@ -372,7 +372,7 @@ if [ "$response" != '{"detail":"Password incorrect."}' ]; then
   echo ${response}
   exit 1
 fi
-echo "Scenario 17 -  Delete self user (With token, wrong password) : Pass"
+echo "Scenario 17 - Delete self user (With token, wrong password) : Pass"
 
 
 # Scenario 18 - Delete self user (With token)
@@ -422,7 +422,7 @@ if [ -z "$user_id" ]; then
   echo "Failed to re-acquire user's id"
   exit 1
 fi
-echo "Scenario 18 -  Delete self user (With token) : Pass"
+echo "Scenario 18 - Delete self user (With token) : Pass"
 
 
 # Scenario 19 - Delete other user (With token)

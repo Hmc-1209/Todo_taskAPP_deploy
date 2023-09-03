@@ -10,7 +10,7 @@ from Exceptions import access_denied_not_allowed
 router = APIRouter(prefix="/tag", tags=["Tag"])
 
 
-@router.get("/repo_id/{repo_id}")
+@router.get("/repo_id/{id}")
 async def get_tags_using_repo_id(repo_id: int, current_user: Annotated[UpdateUser, Depends(get_current_user)]) -> list[UpdateTag]:
     """The endpoint of reading all tags in specific repository"""
 

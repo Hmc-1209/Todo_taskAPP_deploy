@@ -1025,7 +1025,7 @@ echo "Scenario 64 - Create tag for unknown user using repo id (With token) : Pas
 
 # Scenario 65 - Read tags from self repo (Without token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/${repo_id}" \
+  "${path}/tag/repo_id/{id}?repo_id=${repo_id}" \
   -H "accept: application/json"
 )
 if [ "$response" != '{"detail":"Not authenticated"}' ]; then
@@ -1034,10 +1034,10 @@ if [ "$response" != '{"detail":"Not authenticated"}' ]; then
 fi
 echo "Scenario 65 - Read tags from self repo (Without token) : Pass"
 
-echo ${}
+
 # Scenario 66 - Read tags from self repo (With token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/${repo_id}" \
+  "${path}/tag/repo_id/{id}?repo_id=${repo_id}" \
   -H "accept: application/json" \
   -H "Authorization: Bearer ${user_token}"
 )
@@ -1054,7 +1054,7 @@ echo "Scenario 66 - Read tags from self repo (With token) : Pass"
 
 # Scenario 67 - Read tags from other user's repo (With token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/1" \
+  "${path}/tag/repo_id/{id}?repo_id=1" \
   -H "accept: application/json" \
   -H "Authorization: Bearer ${user_token}"
 )
@@ -1067,7 +1067,7 @@ echo "Scenario 67 - Read tags from other user's repo (With token) : Pass"
 
 # Scenario 68 - Read tags from unknown repo (With token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/-1" \
+  "${path}/tag/repo_id/{id}?repo_id=-1" \
   -H "accept: application/json" \
   -H "Authorization: Bearer ${user_token}"
 )
@@ -1204,7 +1204,7 @@ response=$(curl -s -X POST \
   -d 'username=User1&password=User1'
 )
 refresh_token=$(echo "$response" | grep "refresh_token")
-refresh_token=$(echo "$user_token" | awk -F'"' '{print $4}')
+refresh_token=$(echo "$refresh_token" | awk -F'"' '{print $4}')
 if [ -z "$refresh_token" ]; then
   echo ${response}
   exit 1
@@ -1218,7 +1218,7 @@ response=$(curl -s -X POST \
   -H "accept: application/json" \
   -H "Content-Type: application/x-www-form-urlencoded"
 )
-if [ "$response" != '{"detail": "Token avaliable."}' ]; then
+if [ "$response" != '{"detail":"Token avaliable."}' ]; then
   echo ${response}
   exit 1
 fi
@@ -1231,8 +1231,10 @@ response=$(curl -s -X POST \
   -H "accept: application/json" \
   -H "Content-Type: application/x-www-form-urlencoded"
 )
-if [ "$response" != '{"detail": "Token avaliable."}' ]; then
+if [ "$response" != '{"detail":"Token avaliable."}' ]; then
   echo ${response}
   exit 1
 fi
 echo "Scenario 79 - Validate refresh token : Pass"
+
+echo "All scenarios passes successfully!"

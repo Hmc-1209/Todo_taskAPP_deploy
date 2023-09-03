@@ -1025,7 +1025,7 @@ echo "Scenario 64 - Create tag for unknown user using repo id (With token) : Pas
 
 # Scenario 65 - Read tags from self repo (Without token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/{id}?repo_id=${repo_id}" \
+  "${path}/tag/repo_id/${repo_id}" \
   -H "accept: application/json"
 )
 if [ "$response" != '{"detail":"Not authenticated"}' ]; then
@@ -1034,17 +1034,17 @@ if [ "$response" != '{"detail":"Not authenticated"}' ]; then
 fi
 echo "Scenario 65 - Read tags from self repo (Without token) : Pass"
 
-
+echo ${}
 # Scenario 66 - Read tags from self repo (With token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/{id}?repo_id=${repo_id}" \
+  "${path}/tag/repo_id/${repo_id}" \
   -H "accept: application/json" \
   -H "Authorization: Bearer ${user_token}"
 )
 failed_message=$(echo "$response" | grep "detail")
 failed_message=$(echo "$failed_message" | awk -F'"' '{print $4}')
 tag_id=$(echo "$response" | grep "tag_id")
-tag_id=$(echo "$tag_id" | awk -F'"' '{print $7}' | awk -F':' '{print $2}' | awk -F')' '{print $1}')
+tag_id=$(echo "$tag_id" | awk -F'"' '{print $7}' | awk -F':' '{print $2}' | awk -F'}' '{print $1}')
 if [ "$failed_message" ]; then
   echo ${response}
   exit 1
@@ -1054,7 +1054,7 @@ echo "Scenario 66 - Read tags from self repo (With token) : Pass"
 
 # Scenario 67 - Read tags from other user's repo (With token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/{id}?repo_id=1" \
+  "${path}/tag/repo_id/1" \
   -H "accept: application/json" \
   -H "Authorization: Bearer ${user_token}"
 )
@@ -1067,7 +1067,7 @@ echo "Scenario 67 - Read tags from other user's repo (With token) : Pass"
 
 # Scenario 68 - Read tags from unknown repo (With token)
 response=$(curl -s -X GET \
-  "${path}/tag/repo_id/{id}?repo_id=-1" \
+  "${path}/tag/repo_id/-1" \
   -H "accept: application/json" \
   -H "Authorization: Bearer ${user_token}"
 )

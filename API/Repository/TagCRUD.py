@@ -60,7 +60,7 @@ async def update_tag_info(tag: UpdateTag):
             status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot update tag."
         )
 
-    return {"detail": "Success:Successfully updated the tag.z"}
+    return {"detail": "Success:Successfully updated the tag."}
 
 
 async def delete_spec_tag(tag: DeleteTag):

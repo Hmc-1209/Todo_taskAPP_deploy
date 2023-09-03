@@ -1,5 +1,4 @@
 sip==5.5.0
-PyQt5==5.15.9
 uvicorn
 fastapi[all]
 databases

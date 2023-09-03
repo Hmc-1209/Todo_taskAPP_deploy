@@ -15,12 +15,17 @@ async def read_user_with__corresponding_id(user_id: int, current_user: Annotated
     """The endpoint of getting specific user's info by user_id"""
 
     user = await check_user(user_id)
+    user = {
+        "user_name": user[1],
+        "user_id": user[0],
+        "user_birthdate": user[3].strftime("%Y-%m-%d")
+    }
 
     if user_id != current_user.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Access denied. You are not allowed to read other user's info.")
 
-    return Annotated[UpdateUser, Depends(user)]
+    return user
 
 
 @router.get("/name/{name}")

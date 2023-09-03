@@ -8,24 +8,24 @@
 #### Overall test result - 
 | Total Scenarios | Passes | Pass rate |
 |-----------------|--------|-----------|
-| 76              | 76     | 100%      |
+| 79              | 79     | 100%      |
 
 #### Scenarios -
 1. Create new user with name "User1", password "User1", birth date "2023-01-01"
 
 2. Get the User1's authorization token (access_token)
 
-3. Read user using User1's user id (Token❎)
+3. Read user id using name "User1" (Token✅)
 
-4. Read user using User1's user id (Token✅)
+4. Read user using User1's user id (Token❎)
 
-5. Read user with unknown user id -1 (Token✅)
+5. Read user using User1's user id (Token✅)
 
-6. Read user with user id 1 (Token✅)
+6. Read user with unknown user id -1 (Token✅)
 
-7. Read user id using name "User1" (Token❎)
+7. Read user with user id 1 (Token✅)
 
-8. Read user id using name "User1" (Token✅)
+8. Read user id using name "User1" (Token❎)
 
 9. Read user id using name "DANNY HO" (Token✅)
 
@@ -162,6 +162,12 @@
 75. Delete tag using tag id 1 (Token✅)
 
 76. Delete tag using unknown tag id -1 (Token✅)
+
+77. Get refresh token
+
+78. Validate access token
+
+79. Validate refresh token
 
 
 #### Testing result - 

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Connect to Remote Host') {
+        stage('Build') {
             steps {
                 withCredentials([file(credentialsId: 'Todo_taskApp_server_API', variable: 'apiSecretFile'),
                                 file(credentialsId: 'Todo_taskApp_server_API_auth', variable: 'authSecretFile')]) {
@@ -21,7 +21,6 @@ pipeline {
                             docker build -t todo_task_app_api .
                             docker run -d --name todo_task_app_api -p 8002:8002 todo_task_app_api
                             docker image prune -f
-
                         "
                         '''
                     }

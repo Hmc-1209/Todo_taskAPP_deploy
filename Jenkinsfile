@@ -16,6 +16,9 @@ pipeline {
                             scp $apiSecretFile dannyho@122.116.20.182:~/Documents/Todo_taskAPP_server/API/
                             scp $authSecretFile dannyho@122.116.20.182:~/Documents/Todo_taskAPP_server/API/Authentication/
 
+                            ls -d ~/Documents/Todo_taskAPP_server/API/
+                            ls -d ~/Documents/Todo_taskAPP_server/API/Authentication
+
                             cd ~/Documents/Todo_taskAPP_server
                             git pull
                             cd API

@@ -30,10 +30,15 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh'''
-                    cd ~/Documents/Todo_taskAPP_server/API/test
-                    ./Deploy_test.sh
-                '''
+                sshagent(['Raspi-dannyho']) {
+                    sh'''
+                    ssh dannyho@122.116.20.182 "
+                        cd ~/Documents/Todo_taskAPP_server/API/test
+                        chmod +x Deploy_test.sh
+                        ./Deploy_test.sh
+                    "
+                    '''
+                }
             }
         }
 

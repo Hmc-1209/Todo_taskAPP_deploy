@@ -7,13 +7,20 @@ const get_access_token = async (user_name, user_password) => {
   formData.append("password", user_password);
 
   try {
-    const response = await axios.post(path + "/token/access_token", {
-      formData,
+    const response = await axios.post(path + "/token/access_token", formData, {
       headers: {
+        accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
       },
+      validateStatus: function (status) {
+        return (status >= 200 && status < 300) || status === 404;
+      },
     });
-    console.log(response);
+    if (response.data.access_token) {
+      window.localStorage.setItem("access_token", response.data.access_token);
+    } else {
+      console.log(response.data);
+    }
   } catch (error) {
     console.log(error);
   }

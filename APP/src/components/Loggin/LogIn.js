@@ -16,15 +16,19 @@ const LogIn = () => {
 
   return (
     <>
-      <div className="logInPageInputHint" onChange={userNameOnChange}>
-        Username
-      </div>
-      <input type="text" className="logInPageInput" />
+      <div className="logInPageInputHint">Username</div>
+      <input
+        type="text"
+        className="logInPageInput"
+        onChange={userNameOnChange}
+      />
 
-      <div className="logInPageInputHint" onChange={userPasswordOnChange}>
-        Password
-      </div>
-      <input type="password" className="logInPageInput" />
+      <div className="logInPageInputHint">Password</div>
+      <input
+        type="password"
+        className="logInPageInput"
+        onChange={userPasswordOnChange}
+      />
 
       <button
         className="logInPageSubmit"

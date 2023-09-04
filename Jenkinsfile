@@ -36,7 +36,6 @@ pipeline {
                         echo "Waiting a short period of time to let API start up properly..."
                         sleep 3
                         cd ~/Documents/Todo_taskAPP_server/API/test
-                        chmod +x Deploy_test.sh
                         ./Deploy_test.sh
                     "
                     '''

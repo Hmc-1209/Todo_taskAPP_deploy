@@ -88,3 +88,17 @@ async def validate_refresh_token(token: str):
 
     except:
         raise token_expired
+
+
+async def generate_access_token_using_refresh_token(token):
+    """Generate the access_token"""
+
+    payload = jwt.decode(
+        token, REFRESH_TOKEN_SECRET_KEY, algorithms=ALGORITHM)
+
+    data = {
+        "user_name": payload["user_name"],
+        "user_password": payload["user_password"]
+    }
+
+    return await generate_access_token(data)

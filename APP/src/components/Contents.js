@@ -3,7 +3,7 @@ import { FaTrash } from "react-icons/fa";
 import TaskDatePicker from "./common/TaskDatePicker";
 
 // Context
-import { AppContext, setNote } from "./Layout";
+import { LayoutContext, setNote } from "./Layout";
 import {
   addEmptyTask,
   delTask,
@@ -41,7 +41,7 @@ const Contents = () => {
     setDelRepoConfirm,
     setDue,
     setFocusing,
-  } = useContext(AppContext);
+  } = useContext(LayoutContext);
 
   // Checking the status of tasks
   const task_finish = (task_id) => {

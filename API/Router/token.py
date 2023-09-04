@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
+from jose import jwt
 
-from Repository.TokenCRUD import generate_access_token, generate_refresh_token, validate_access_token, validate_refresh_token
+from Repository.TokenCRUD import generate_access_token, generate_refresh_token, validate_access_token, validate_refresh_token, generate_access_token_using_refresh_token
 
 router = APIRouter(prefix="/token", tags=["Token"])
 
@@ -47,3 +48,12 @@ async def validate_the_refresh_token(token: str) -> None:
     """The endpoint of validate the refresh_token's availability"""
 
     return await validate_refresh_token(token)
+
+
+@router.post("/get_new_access_token")
+async def get_new_access_token_using_refresh_token(token: str) -> None:
+    """The endpoint of getting new access_token using refresh_token"""
+
+    access_token = await generate_access_token_using_refresh_token(token)
+
+    return {"access_token": access_token}

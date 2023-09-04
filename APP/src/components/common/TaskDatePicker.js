@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useContext } from "react";
-import { AppContext } from "../Layout";
+import { LayoutContext } from "../Layout";
 
 import { days_in_Month } from "../functions/date";
 import { setDue } from "../functions/localStorageCRUD";
@@ -18,7 +18,7 @@ const TaskDatePicker = () => {
     setEditingType,
     setEditing,
     setFocusing,
-  } = useContext(AppContext);
+  } = useContext(LayoutContext);
   const [year, setYear] = useState(due[0]);
   const [month, setMonth] = useState(due[1]);
 

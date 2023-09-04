@@ -5,6 +5,8 @@ import SignUp from "./SignUp";
 const LogInPage = () => {
   const [mode, setMode] = useState(1);
 
+  // let { isLogIn, setIsLogIn } = useContext(AppContext);
+
   const selectMode = (selectedMode) => {
     if (selectedMode === mode) {
       return " modeSelected";

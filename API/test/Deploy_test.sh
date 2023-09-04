@@ -1331,4 +1331,20 @@ if [ "$response" != '{"detail":"Token avaliable."}' ]; then
 fi
 echo "Scenario 79 - Validate refresh token : Pass"
 
+
+# Scenario 80 - Get new access token using refresh token
+response=$(curl -s -X POST \
+  "${path}/token/get_new_access_token?token=${refresh_token}" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json"
+)
+access_token=$(echo "$response" | grep "access_token")
+access_token=$(echo "$access_token" | awk -F'"' '{print $4}')
+if [ -z "$access_token" ]; then
+  echo ${response}
+  exit 1
+fi
+echo "Scenario 80 - Get new access token using refresh token : Pass"
+
+
 echo "All scenarios passes successfully!"

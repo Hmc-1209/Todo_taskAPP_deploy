@@ -12,7 +12,7 @@ import {
   changeTaskNote,
 } from "./functions/localStorageCRUD";
 
-export const AppContext = createContext(null);
+export const LayoutContext = createContext(null);
 
 // Updating repos datas
 const getRepos = () => {
@@ -134,7 +134,7 @@ const Layout = () => {
       style={{ marginTop: "3%", marginLeft: "12%", marginRight: "12%" }}
       onClick={() => changeEditingState()}
     >
-      <AppContext.Provider
+      <LayoutContext.Provider
         value={{
           tasks,
           setTasks,
@@ -172,7 +172,7 @@ const Layout = () => {
           <SideBarL />
           <Outlet />
         </div>
-      </AppContext.Provider>
+      </LayoutContext.Provider>
 
       {alert !== 0 && (
         <div className="alert">

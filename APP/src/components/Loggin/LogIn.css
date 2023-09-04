@@ -20,6 +20,7 @@ body {
   padding: 1%;
   background-color: #FFEAD2;
   border-radius: 1vw;
+  font-weight: bold;
   font-size: large;
   width: 20%;
   border:none;
@@ -28,6 +29,16 @@ body {
   margin-top:2%;
   font-size: larger;
   color:#FFEAD2;
+}
+.logInPageCheckInput {
+  margin-bottom:0%;
+  margin-left: 1%;
+  padding: 1%;
+  background-color: #FFEAD2;
+  border-radius: 1vw;
+  font-weight: bold;
+  font-size: large;
+  border:none;
 }
 .selectLogInMode {
   width: 100%;

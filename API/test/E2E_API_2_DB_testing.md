@@ -169,6 +169,8 @@
 
 79. Validate refresh token
 
+80. Get new access token using refresh token
+
 
 #### Testing result - 
 [API test file](./E2E_API_2_DB_testing.xlsx)

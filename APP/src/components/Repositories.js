@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 
 // Context
-import { AppContext } from "./Layout";
+import { LayoutContext } from "./Layout";
 import {
   updateTagsOnCreate,
   updateTasksOnCreate,
@@ -9,7 +9,7 @@ import {
 
 const Repositories = () => {
   const { repos, setRepos, selectedRepo, setSelectedRepo } =
-    useContext(AppContext);
+    useContext(LayoutContext);
 
   // Get the repo name for new repo, find the empty index
   const repo_name = () => {

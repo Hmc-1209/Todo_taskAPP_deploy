@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { AppContext } from "./Layout";
+import { LayoutContext } from "./Layout";
 import { addTag } from "./functions/localStorageCRUD";
 
 const Tags = () => {
   const { tags, editing, setEditing, selectedRepo, reRender, setReRender } =
-    useContext(AppContext);
+    useContext(LayoutContext);
 
   const selectElement_addTag = () => {
     setEditing(6);

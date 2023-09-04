@@ -1,0 +1,52 @@
+import React, { useContext } from "react";
+import { AppContext } from "./Layout";
+import { addTag } from "./functions/localStorageCRUD";
+
+const Tags = () => {
+  const { tags, editing, setEditing, selectedRepo, reRender, setReRender } =
+    useContext(AppContext);
+
+  const selectElement_addTag = () => {
+    setEditing(6);
+  };
+
+  const setTag = () => {
+    const new_tag = document.getElementById("newTag").value;
+    setEditing(0);
+    addTag(selectedRepo, new_tag);
+    setReRender(reRender + 1);
+  };
+
+  return (
+    <div className="tags">
+      {tags.map((tag) => (
+        <div className="tag" key={tag}>
+          {tag}
+        </div>
+      ))}
+
+      {/* Add new tag */}
+      {editing === 6 && (
+        <input
+          className="editingTag"
+          autoFocus={true}
+          size={5}
+          maxLength={7}
+          id={"newTag"}
+        />
+      )}
+      {editing === 6 && <div className="back" onClick={() => setTag()} />}
+
+      {selectedRepo !== "BaseRepo" && (
+        <button
+          className="addTag"
+          onClick={() => selectElement_addTag(selectedRepo)}
+        >
+          +
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default Tags;

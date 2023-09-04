@@ -5,3 +5,4 @@ API/config.py
 .DS_Store
 venv/
 API/Authentication/config.py
+node_modules/

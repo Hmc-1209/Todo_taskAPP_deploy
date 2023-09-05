@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import LogIn from "./LogIn";
 import SignUp from "./SignUp";
+import { AppContext } from "../../App";
 
 const LogInPage = () => {
-  const [mode, setMode] = useState(1);
-
   // let { isLogIn, setIsLogIn } = useContext(AppContext);
+
+  let { mode, setMode, setAlert } = useContext(AppContext);
 
   const selectMode = (selectedMode) => {
     if (selectedMode === mode) {
@@ -16,6 +17,7 @@ const LogInPage = () => {
 
   const changeMode = (selectNewMode) => {
     setMode(selectNewMode);
+    setAlert(0);
     return;
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 /* Components */
@@ -10,20 +10,31 @@ import LogInPage from "./components/Loggin/LogInPage";
 import {
   validate_access_token,
   validate_refresh_token,
+  get_new_access_token,
 } from "./components/functions/request";
 export const AppContext = createContext(null);
 
+const resetLogStatus = () => {
+  window.localStorage.setItem("access_token", null);
+  window.localStorage.setItem("refresh_token", null);
+  window.localStorage.setItem("isLogIn", 0);
+};
+
 function App() {
-  const [isLogIn, setIsLogIn] = useState(0);
+  let isLogIn = window.localStorage.getItem("isLogIn") === "1";
+  const [reRender, setReRender] = useState(0);
+  const [alert, setAlert] = useState(0);
+  const [mode, setMode] = useState(1);
 
   const loggedIn = async () => {
     if (
       // If first visit website
       !window.localStorage.getItem("access_token") &&
       !window.localStorage.getItem("refresh_token") &&
-      isLogIn
+      !isLogIn
     ) {
-      setIsLogIn(0);
+      resetLogStatus();
+      setReRender((prevReRender) => prevReRender + 1);
     } else if (
       // If access_token avaliable
       window.localStorage.getItem("access_token") &&
@@ -32,7 +43,8 @@ function App() {
       )) &&
       !isLogIn
     ) {
-      setIsLogIn(1);
+      window.localStorage.setItem("isLogIn", 1);
+      setReRender((prevReRender) => prevReRender + 1);
     } else if (
       // If access_token is not avaliable but refresh_token avaliable
       window.localStorage.getItem("access_token") &&
@@ -45,14 +57,52 @@ function App() {
       )) &&
       isLogIn
     ) {
+      window.localStorage.setItem(
+        "access_token",
+        await get_new_access_token(window.localStorage.getItem("refresh_token"))
+      );
+      setReRender((prevReRender) => prevReRender + 1);
+    } else if (
+      // If access_token is not avaliable and no refresh_token
+      window.localStorage.getItem("access_token") &&
+      !(await validate_access_token(
+        window.localStorage.getItem("access_token")
+      )) &&
+      !window.localStorage.getItem("refresh_token") &&
+      isLogIn
+    ) {
+      resetLogStatus();
+      setReRender((prevReRender) => prevReRender + 1);
+    } else if (
+      // If access_token and refresh_token both not avaliable
+      window.localStorage.getItem("access_token") &&
+      !(await validate_access_token(
+        window.localStorage.getItem("access_token")
+      )) &&
+      window.localStorage.getItem("refresh_token") &&
+      !(await validate_refresh_token(
+        window.localStorage.getItem("refresh_token")
+      )) &&
+      isLogIn
+    ) {
+      resetLogStatus();
+      setReRender((prevReRender) => prevReRender + 1);
     }
-    return false;
   };
+  mode === 1 && loggedIn();
 
-  loggedIn();
+  useEffect(() => {
+    if (alert !== 0) {
+      setTimeout(() => {
+        setAlert(0);
+      }, 2000);
+    }
+  }, [alert]);
 
   return (
-    <AppContext.Provider value={{ isLogIn, setIsLogIn }}>
+    <AppContext.Provider
+      value={{ reRender, setReRender, alert, setAlert, mode, setMode }}
+    >
       <BrowserRouter>
         <Routes>
           {!isLogIn && <Route path="/" element={<LogInPage />}></Route>}

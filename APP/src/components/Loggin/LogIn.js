@@ -4,13 +4,13 @@ import "./LogIn.css";
 import get_access_token from "../functions/request";
 import { get_refresh_token } from "../functions/request";
 import { AppContext } from "../../App";
+import alert_message from "../functions/alert";
 
 const LogIn = () => {
   const [userName, setUserName] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [rememberUser, setRememberUser] = useState(false);
-
-  let { setIsLogIn } = useContext(AppContext);
+  let { setReRender, alert, setAlert } = useContext(AppContext);
 
   const userNameOnChange = (element) => {
     setUserName(element.target.value);
@@ -23,12 +23,20 @@ const LogIn = () => {
   };
 
   const logIn = async () => {
-    if (await get_access_token(userName, userPassword)) {
-      setIsLogIn(1);
+    if (userName === "" || userPassword === "") {
+      setAlert(6);
+      return;
     }
-    if (rememberUser) {
-      await get_refresh_token(userName, userPassword);
+    const result = await get_access_token(userName, userPassword);
+    console.log(result);
+    if (result === 0) {
+      window.localStorage.setItem("isLogIn", 1);
+      if (rememberUser) {
+        await get_refresh_token(userName, userPassword);
+      }
+      setReRender((prevReRender) => prevReRender + 1);
     }
+    setAlert(result);
   };
 
   return (
@@ -59,6 +67,8 @@ const LogIn = () => {
       <button className="logInPageSubmit" onClick={logIn}>
         Submit
       </button>
+
+      {alert !== 0 && alert_message(alert)}
     </>
   );
 };

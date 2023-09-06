@@ -1,6 +1,6 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { FaExclamationCircle } from "react-icons/fa";
+// import { FaExclamationCircle } from "react-icons/fa";
 
 // Components
 import SideBarL from "./SidebarL";
@@ -8,20 +8,21 @@ import Navbar from "./Navbar";
 import {
   changeRepoName,
   changeTaskName,
-  createBase,
   changeTaskNote,
 } from "./functions/localStorageCRUD";
+import { AppContext, checkValidation, resetLogStatus } from "../App";
+import { get_user_repos } from "./functions/request";
 
 export const LayoutContext = createContext(null);
 
 // Updating repos datas
-const getRepos = () => {
-  // If no repos
-  if (!window.localStorage.getItem("repos")) {
-    createBase();
+export const getRepos = async () => {
+  if (checkValidation()) {
+    const repos = await get_user_repos();
+    return repos;
   }
-  const data = window.localStorage.getItem("repos");
-  return JSON.parse(data);
+  resetLogStatus();
+  return false;
 };
 
 // Updating tsaks datas
@@ -30,7 +31,7 @@ const getTasks = (repo) => {
   if (!data) {
     return [];
   } else {
-    return JSON.parse(data).find((element) => element.repoName === repo).tasks;
+    return [];
   }
 };
 
@@ -40,7 +41,7 @@ const getTags = (repo) => {
   if (!data) {
     return [];
   } else {
-    return JSON.parse(data).find((element) => element.repoName === repo).tags;
+    return [];
   }
 };
 
@@ -56,8 +57,8 @@ export const setNote = (selectedRepo, editingItem) => {
 };
 
 const Layout = () => {
-  const [repos, setRepos] = useState(getRepos());
-  const [selectedRepo, setSelectedRepo] = useState(repos[0]);
+  const [repos, setRepos] = useState([]);
+  const [selectedRepo, setSelectedRepo] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [tags, setTags] = useState([]);
   const [editing, setEditing] = useState(-1);
@@ -70,19 +71,27 @@ const Layout = () => {
   const [due, setDue] = useState([-1, -1, -1]);
   const [focusing, setFocusing] = useState(0);
 
+  let { setRepoIsLoading } = useContext(AppContext);
+
   useEffect(() => {
     setTasks(getTasks(selectedRepo));
-    setRepos(getRepos(selectedRepo));
     setTags(getTags(selectedRepo));
     setDelRepoConfirm(0);
   }, [selectedRepo, reRender]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setAlert(0);
-      setAlertMessage(null);
-    }, 2000);
-  }, [alert]);
+    const fetchRepos = async () => {
+      setRepoIsLoading(true);
+      const reposData = await getRepos();
+      if (!reposData) {
+        resetLogStatus();
+      }
+      setRepos(reposData);
+      setRepoIsLoading(false);
+    };
+
+    fetchRepos();
+  }, [setRepoIsLoading]);
 
   // On change (finished editing)
   const changeEditingState = () => {
@@ -174,14 +183,14 @@ const Layout = () => {
         </div>
       </LayoutContext.Provider>
 
-      {alert !== 0 && (
+      {/* {alert !== 0 && (
         <div className="alert">
           <div className="error">
             <FaExclamationCircle className="exclamationIcon" />
             {alertMessage}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -5,12 +5,20 @@ import get_access_token from "../functions/request";
 import { get_refresh_token } from "../functions/request";
 import { AppContext } from "../../App";
 import alert_message from "../functions/alert";
+import { get_user_id } from "../functions/request";
 
 const LogIn = () => {
-  const [userName, setUserName] = useState("");
-  const [userPassword, setUserPassword] = useState("");
   const [rememberUser, setRememberUser] = useState(false);
-  let { setReRender, alert, setAlert } = useContext(AppContext);
+  let {
+    userName,
+    setUserName,
+    userPassword,
+    setUserPassword,
+    setReRender,
+    alert,
+    setAlert,
+    setUserId,
+  } = useContext(AppContext);
 
   const userNameOnChange = (element) => {
     setUserName(element.target.value);
@@ -34,6 +42,10 @@ const LogIn = () => {
       if (rememberUser) {
         await get_refresh_token(userName, userPassword);
       }
+
+      const user_id = await get_user_id(userName);
+      setUserId(user_id);
+
       setReRender((prevReRender) => prevReRender + 1);
     }
     setAlert(result);

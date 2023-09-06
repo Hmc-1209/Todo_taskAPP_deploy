@@ -6,7 +6,7 @@ import Contents from "./components/Contents";
 import Tags from "./components/Tag";
 import Layout from "./components/Layout";
 import Home from "./components/Home";
-import LogInPage from "./components/Loggin/LogInPage";
+import LogInPage from "./components/LogIn/LogInPage";
 import {
   validate_access_token,
   validate_refresh_token,
@@ -14,10 +14,64 @@ import {
 } from "./components/functions/request";
 export const AppContext = createContext(null);
 
-const resetLogStatus = () => {
+export const resetLogStatus = () => {
   window.localStorage.setItem("access_token", null);
   window.localStorage.setItem("refresh_token", null);
   window.localStorage.setItem("isLogIn", 0);
+};
+
+export const checkValidation = async () => {
+  if (
+    // If access_token avaliable
+    window.localStorage.getItem("access_token") &&
+    (await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    !window.localStorage.getItem("isLogIn")
+  ) {
+    return true;
+  } else if (
+    // If access_token is not avaliable but refresh_token avaliable
+    window.localStorage.getItem("access_token") &&
+    !(await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    window.localStorage.getItem("refresh_token") &&
+    (await validate_refresh_token(
+      window.localStorage.getItem("refresh_token")
+    )) &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    window.localStorage.setItem(
+      "access_token",
+      await get_new_access_token(window.localStorage.getItem("refresh_token"))
+    );
+    return true;
+  } else if (
+    // If access_token is not avaliable and no refresh_token
+    window.localStorage.getItem("access_token") &&
+    !(await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    !window.localStorage.getItem("refresh_token") &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    return false;
+  } else if (
+    // If access_token and refresh_token both not avaliable
+    window.localStorage.getItem("access_token") &&
+    !(await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    window.localStorage.getItem("refresh_token") &&
+    !(await validate_refresh_token(
+      window.localStorage.getItem("refresh_token")
+    )) &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    return false;
+  }
+  console.clear();
 };
 
 function App() {
@@ -25,6 +79,10 @@ function App() {
   const [reRender, setReRender] = useState(0);
   const [alert, setAlert] = useState(0);
   const [mode, setMode] = useState(1);
+  const [userName, setUserName] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [userId, setUserId] = useState(null);
+  const [repoIsLoading, setRepoIsLoading] = useState(true);
 
   const loggedIn = async () => {
     if (
@@ -34,7 +92,6 @@ function App() {
       !isLogIn
     ) {
       resetLogStatus();
-      setReRender((prevReRender) => prevReRender + 1);
     } else if (
       // If access_token avaliable
       window.localStorage.getItem("access_token") &&
@@ -73,6 +130,7 @@ function App() {
     ) {
       resetLogStatus();
       setReRender((prevReRender) => prevReRender + 1);
+      console.clear();
     } else if (
       // If access_token and refresh_token both not avaliable
       window.localStorage.getItem("access_token") &&
@@ -88,8 +146,9 @@ function App() {
       resetLogStatus();
       setReRender((prevReRender) => prevReRender + 1);
     }
+    console.clear();
   };
-  mode === 1 && loggedIn();
+  mode === 1 && !isLogIn && loggedIn();
 
   useEffect(() => {
     if (alert !== 0) {
@@ -101,7 +160,22 @@ function App() {
 
   return (
     <AppContext.Provider
-      value={{ reRender, setReRender, alert, setAlert, mode, setMode }}
+      value={{
+        reRender,
+        setReRender,
+        alert,
+        setAlert,
+        mode,
+        setMode,
+        userName,
+        setUserName,
+        userPassword,
+        setUserPassword,
+        userId,
+        setUserId,
+        repoIsLoading,
+        setRepoIsLoading,
+      }}
     >
       <BrowserRouter>
         <Routes>

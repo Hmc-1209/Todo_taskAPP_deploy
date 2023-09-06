@@ -5,10 +5,16 @@ import { regist_new_user } from "../functions/request";
 import alert_message from "../functions/alert";
 
 const SignUp = () => {
-  const [userName, setUserName] = useState("");
-  const [userPassword, setUserPassword] = useState("");
   const [confirmUserPassword, setConfirmUserPassword] = useState("");
-  let { setMode, alert, setAlert } = useContext(AppContext);
+  let {
+    userName,
+    setUserName,
+    userPassword,
+    setUserPassword,
+    setMode,
+    alert,
+    setAlert,
+  } = useContext(AppContext);
 
   const userNameOnChange = (element) => {
     setUserName(element.target.value);

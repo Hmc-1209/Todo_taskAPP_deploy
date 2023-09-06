@@ -1,15 +1,14 @@
 import React, { useContext, useEffect } from "react";
 
 // Context
-import { LayoutContext } from "./Layout";
-import {
-  updateTagsOnCreate,
-  updateTasksOnCreate,
-} from "./functions/localStorageCRUD";
+import { LayoutContext, getRepos } from "./Layout";
+import { AppContext, resetLogStatus } from "../App";
+import { create_user_repo } from "./functions/request";
 
 const Repositories = () => {
-  const { repos, setRepos, selectedRepo, setSelectedRepo } =
+  const { repos, selectedRepo, setSelectedRepo, setRepos } =
     useContext(LayoutContext);
+  const { repoIsLoading, setReRender } = useContext(AppContext);
 
   // Get the repo name for new repo, find the empty index
   const repo_name = () => {
@@ -19,26 +18,30 @@ const Repositories = () => {
       if (i === repos.length) {
         break;
       }
-      if (repos[i] === "Repo" + index) {
+      if (repos[i].repo_name === "NewRepo" + index) {
         i = 0;
         index++;
       } else {
         i++;
       }
     }
-    return "Repo" + index;
+    return "NewRepo" + index;
   };
 
   // Create a new repository
-  const createRepo = () => {
+  const createRepo = async () => {
     const new_repo = repo_name();
-    const data = repos.concat(new_repo);
-    setRepos(data);
-    updateTasksOnCreate(new_repo);
-    updateTagsOnCreate(new_repo);
+    await create_user_repo(new_repo);
+    const new_repos = await getRepos();
+    console.log(new_repos);
+    if (new_repos === null) {
+      resetLogStatus();
+      setReRender((prevReRender) => prevReRender + 1);
+    }
+    setRepos(new_repos);
   };
   useEffect(() => {
-    window.localStorage.setItem("repos", JSON.stringify(repos));
+    console.log(repos);
   }, [repos]);
 
   // Check if the repository has been selected
@@ -53,20 +56,25 @@ const Repositories = () => {
 
   return (
     <>
-      {repos
-        .filter((repo) => repo !== "BaseRepo")
-        .map((repo) => (
-          <div
-            className={repoClass(repo)}
-            onClick={(repo) => selectRepo(repo)}
-            key={repo}
-          >
-            {repo}
-          </div>
-        ))}
-      <button className="addRepo" onClick={createRepo}>
-        +
-      </button>
+      {repoIsLoading ? (
+        <p style={{ color: "#FFEAD2", paddingLeft: "3%" }}>Loading...</p>
+      ) : (
+        <>
+          {Array.isArray(repos) &&
+            repos.map((repo) => (
+              <div
+                className={repoClass(repo)}
+                onClick={(repo) => selectRepo(repo)}
+                key={repo.repo_name}
+              >
+                {repo.repo_name}
+              </div>
+            ))}
+          <button className="addRepo" onClick={createRepo}>
+            +
+          </button>
+        </>
+      )}
     </>
   );
 };

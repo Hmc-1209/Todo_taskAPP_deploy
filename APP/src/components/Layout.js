@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-// import { FaExclamationCircle } from "react-icons/fa";
+import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { FaExclamationCircle, FaSignOutAlt } from "react-icons/fa";
+import "./css/Layout.css";
 
 // Components
 import SideBarL from "./SidebarL";
@@ -10,39 +11,15 @@ import {
   changeTaskName,
   changeTaskNote,
 } from "./functions/localStorageCRUD";
-import { AppContext, checkValidation, resetLogStatus } from "../App";
-import { get_user_repos } from "./functions/request";
+import { AppContext, resetLogStatus } from "../App";
+import { get_user_repos, checkValidation } from "./functions/request";
 
 export const LayoutContext = createContext(null);
 
 // Updating repos datas
 export const getRepos = async () => {
-  if (checkValidation()) {
-    const repos = await get_user_repos();
-    return repos;
-  }
-  resetLogStatus();
-  return false;
-};
-
-// Updating tsaks datas
-const getTasks = (repo) => {
-  const data = window.localStorage.getItem("tasks");
-  if (!data) {
-    return [];
-  } else {
-    return [];
-  }
-};
-
-// Updating tags datas
-const getTags = (repo) => {
-  const data = window.localStorage.getItem("tags");
-  if (!data) {
-    return [];
-  } else {
-    return [];
-  }
+  const repos = await get_user_repos();
+  return repos;
 };
 
 // Check if the repo name is legal
@@ -70,28 +47,27 @@ const Layout = () => {
   const [delRepoConfirm, setDelRepoConfirm] = useState(0);
   const [due, setDue] = useState([-1, -1, -1]);
   const [focusing, setFocusing] = useState(0);
+  const location = useLocation();
 
   let { setRepoIsLoading } = useContext(AppContext);
 
   useEffect(() => {
-    setTasks(getTasks(selectedRepo));
-    setTags(getTags(selectedRepo));
-    setDelRepoConfirm(0);
-  }, [selectedRepo, reRender]);
-
-  useEffect(() => {
     const fetchRepos = async () => {
-      setRepoIsLoading(true);
-      const reposData = await getRepos();
-      if (!reposData) {
+      if (await checkValidation()) {
+        const reposData = await getRepos();
+        if (!reposData) {
+          resetLogStatus();
+        }
+        setRepos(reposData);
+        setRepoIsLoading(false);
+      } else {
         resetLogStatus();
+        setReRender((prevReRender) => prevReRender + 1);
       }
-      setRepos(reposData);
-      setRepoIsLoading(false);
     };
-
     fetchRepos();
-  }, [setRepoIsLoading]);
+    // eslint-disable-next-line
+  }, []);
 
   // On change (finished editing)
   const changeEditingState = () => {
@@ -179,18 +155,36 @@ const Layout = () => {
 
         <div style={{ display: "flex" }}>
           <SideBarL />
-          <Outlet />
+          {/* If loading repos or repos not found, show hint "Create repo", if repos exist, show hint "Select repo" */}
+          {location.pathname === "/" && (
+            <div className="contents">
+              {selectedRepo === null && repos.length === 0 && (
+                <div className="contentHint">Create a repo to start</div>
+              )}
+              {selectedRepo === null && repos.length !== 0 && (
+                <div className="contentHint">Select a repo</div>
+              )}
+            </div>
+          )}
+          {/* If selected repo(path changed to contents) */}
+          {location.pathname === "/contents" && <Outlet />}
         </div>
       </LayoutContext.Provider>
 
-      {/* {alert !== 0 && (
+      {alert !== 0 && (
         <div className="alert">
           <div className="error">
             <FaExclamationCircle className="exclamationIcon" />
             {alertMessage}
           </div>
         </div>
-      )} */}
+      )}
+
+      <div onClick={resetLogStatus}>
+        <NavLink to="/">
+          <FaSignOutAlt className="signOutButton" />
+        </NavLink>
+      </div>
     </div>
   );
 };

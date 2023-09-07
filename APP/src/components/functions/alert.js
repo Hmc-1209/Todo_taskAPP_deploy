@@ -37,6 +37,9 @@ const alert_message = (alert) => {
         <div className="alertMessageShort red">No empty value is accepted!</div>
       );
 
+    case 7:
+      return <div className="alertMessageShort green">Loging...</div>;
+
     default:
       return <div></div>;
   }

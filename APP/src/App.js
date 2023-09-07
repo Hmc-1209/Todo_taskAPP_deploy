@@ -15,63 +15,18 @@ import {
 export const AppContext = createContext(null);
 
 export const resetLogStatus = () => {
+  // Reset all localStorage datas and force log out
+
+  window.localStorage.setItem("user_id", null);
   window.localStorage.setItem("access_token", null);
   window.localStorage.setItem("refresh_token", null);
   window.localStorage.setItem("isLogIn", 0);
+  window.location.reload();
 };
 
-export const checkValidation = async () => {
-  if (
-    // If access_token avaliable
-    window.localStorage.getItem("access_token") &&
-    (await validate_access_token(
-      window.localStorage.getItem("access_token")
-    )) &&
-    !window.localStorage.getItem("isLogIn")
-  ) {
-    return true;
-  } else if (
-    // If access_token is not avaliable but refresh_token avaliable
-    window.localStorage.getItem("access_token") &&
-    !(await validate_access_token(
-      window.localStorage.getItem("access_token")
-    )) &&
-    window.localStorage.getItem("refresh_token") &&
-    (await validate_refresh_token(
-      window.localStorage.getItem("refresh_token")
-    )) &&
-    window.localStorage.getItem("isLogIn")
-  ) {
-    window.localStorage.setItem(
-      "access_token",
-      await get_new_access_token(window.localStorage.getItem("refresh_token"))
-    );
-    return true;
-  } else if (
-    // If access_token is not avaliable and no refresh_token
-    window.localStorage.getItem("access_token") &&
-    !(await validate_access_token(
-      window.localStorage.getItem("access_token")
-    )) &&
-    !window.localStorage.getItem("refresh_token") &&
-    window.localStorage.getItem("isLogIn")
-  ) {
-    return false;
-  } else if (
-    // If access_token and refresh_token both not avaliable
-    window.localStorage.getItem("access_token") &&
-    !(await validate_access_token(
-      window.localStorage.getItem("access_token")
-    )) &&
-    window.localStorage.getItem("refresh_token") &&
-    !(await validate_refresh_token(
-      window.localStorage.getItem("refresh_token")
-    )) &&
-    window.localStorage.getItem("isLogIn")
-  ) {
-    return false;
-  }
-  console.clear();
+export const signOut = () => {
+  resetLogStatus();
+  window.location.href = "/";
 };
 
 function App() {
@@ -83,78 +38,79 @@ function App() {
   const [userPassword, setUserPassword] = useState("");
   const [userId, setUserId] = useState(null);
   const [repoIsLoading, setRepoIsLoading] = useState(true);
+  const [taskIsLoading, setTaskIsLoading] = useState(true);
 
-  const loggedIn = async () => {
-    if (
-      // If first visit website
-      !window.localStorage.getItem("access_token") &&
-      !window.localStorage.getItem("refresh_token") &&
-      !isLogIn
-    ) {
-      resetLogStatus();
-    } else if (
-      // If access_token avaliable
-      window.localStorage.getItem("access_token") &&
-      (await validate_access_token(
-        window.localStorage.getItem("access_token")
-      )) &&
-      !isLogIn
-    ) {
-      window.localStorage.setItem("isLogIn", 1);
-      setReRender((prevReRender) => prevReRender + 1);
-    } else if (
-      // If access_token is not avaliable but refresh_token avaliable
-      window.localStorage.getItem("access_token") &&
-      !(await validate_access_token(
-        window.localStorage.getItem("access_token")
-      )) &&
-      window.localStorage.getItem("refresh_token") &&
-      (await validate_refresh_token(
-        window.localStorage.getItem("refresh_token")
-      )) &&
-      isLogIn
-    ) {
-      window.localStorage.setItem(
-        "access_token",
-        await get_new_access_token(window.localStorage.getItem("refresh_token"))
-      );
-      setReRender((prevReRender) => prevReRender + 1);
-    } else if (
-      // If access_token is not avaliable and no refresh_token
-      window.localStorage.getItem("access_token") &&
-      !(await validate_access_token(
-        window.localStorage.getItem("access_token")
-      )) &&
-      !window.localStorage.getItem("refresh_token") &&
-      isLogIn
-    ) {
-      resetLogStatus();
-      setReRender((prevReRender) => prevReRender + 1);
-      console.clear();
-    } else if (
-      // If access_token and refresh_token both not avaliable
-      window.localStorage.getItem("access_token") &&
-      !(await validate_access_token(
-        window.localStorage.getItem("access_token")
-      )) &&
-      window.localStorage.getItem("refresh_token") &&
-      !(await validate_refresh_token(
-        window.localStorage.getItem("refresh_token")
-      )) &&
-      isLogIn
-    ) {
-      resetLogStatus();
-      setReRender((prevReRender) => prevReRender + 1);
-    }
-    console.clear();
-  };
-  mode === 1 && !isLogIn && loggedIn();
+  // Log in function, called when opening website
+  useEffect(() => {
+    const loggedIn = async () => {
+      if (
+        // If access_token avaliable
+        window.localStorage.getItem("access_token") &&
+        (await validate_access_token(
+          window.localStorage.getItem("access_token")
+        )) &&
+        !isLogIn
+      ) {
+        window.localStorage.setItem("isLogIn", 1);
+        setReRender((prevReRender) => prevReRender + 1);
+      } else if (
+        // If access_token is not avaliable but refresh_token avaliable
+        window.localStorage.getItem("access_token") &&
+        !(await validate_access_token(
+          window.localStorage.getItem("access_token")
+        )) &&
+        window.localStorage.getItem("refresh_token") &&
+        (await validate_refresh_token(
+          window.localStorage.getItem("refresh_token")
+        )) &&
+        isLogIn
+      ) {
+        window.localStorage.setItem(
+          "access_token",
+          await get_new_access_token(
+            window.localStorage.getItem("refresh_token")
+          )
+        );
+        setReRender((prevReRender) => prevReRender + 1);
+      } else if (
+        // If access_token is not avaliable and no refresh_token
+        window.localStorage.getItem("access_token") &&
+        !(await validate_access_token(
+          window.localStorage.getItem("access_token")
+        )) &&
+        !window.localStorage.getItem("refresh_token") &&
+        isLogIn
+      ) {
+        resetLogStatus();
+        setReRender((prevReRender) => prevReRender + 1);
+      } else if (
+        // If access_token and refresh_token both not avaliable
+        window.localStorage.getItem("access_token") &&
+        !(await validate_access_token(
+          window.localStorage.getItem("access_token")
+        )) &&
+        window.localStorage.getItem("refresh_token") &&
+        !(await validate_refresh_token(
+          window.localStorage.getItem("refresh_token")
+        )) &&
+        isLogIn
+      ) {
+        resetLogStatus();
+        setReRender((prevReRender) => prevReRender + 1);
+      }
+    };
+    if (mode === 1 && isLogIn === 0) loggedIn();
+  }, [isLogIn, mode]);
 
   useEffect(() => {
     if (alert !== 0) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setAlert(0);
       }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [alert]);
 
@@ -175,6 +131,8 @@ function App() {
         setUserId,
         repoIsLoading,
         setRepoIsLoading,
+        taskIsLoading,
+        setTaskIsLoading,
       }}
     >
       <BrowserRouter>

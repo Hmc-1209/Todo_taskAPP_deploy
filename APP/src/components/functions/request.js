@@ -1,6 +1,64 @@
 import axios from "axios";
 const path = "http://122.116.20.182:8002";
 
+export const checkValidation = async () => {
+  if (
+    // If access_token avaliable
+    window.localStorage.getItem("access_token") &&
+    (await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    console.log("Validation Pass");
+    return true;
+  } else if (
+    // If access_token is not avaliable but refresh_token avaliable
+    window.localStorage.getItem("access_token") &&
+    !(await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    window.localStorage.getItem("refresh_token") &&
+    (await validate_refresh_token(
+      window.localStorage.getItem("refresh_token")
+    )) &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    window.localStorage.setItem(
+      "access_token",
+      await get_new_access_token(window.localStorage.getItem("refresh_token"))
+    );
+    console.log("Creating new access token");
+    return true;
+  } else if (
+    // If access_token is not avaliable and no refresh_token
+    window.localStorage.getItem("access_token") &&
+    !(await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    !window.localStorage.getItem("refresh_token") &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    console.log("Failed");
+    return false;
+  } else if (
+    // If access_token and refresh_token both not avaliable
+    window.localStorage.getItem("access_token") &&
+    !(await validate_access_token(
+      window.localStorage.getItem("access_token")
+    )) &&
+    window.localStorage.getItem("refresh_token") &&
+    !(await validate_refresh_token(
+      window.localStorage.getItem("refresh_token")
+    )) &&
+    window.localStorage.getItem("isLogIn")
+  ) {
+    console.log("Both token failed");
+    return false;
+  }
+  return false;
+};
+
 /* Request behaviors with access token and refresh token */
 const get_access_token = async (user_name, user_password) => {
   // Get the access token for user to verify credential
@@ -10,7 +68,7 @@ const get_access_token = async (user_name, user_password) => {
   formData.append("password", user_password);
 
   try {
-    const response = await axios.post(path + "/token/access_token", formData, {
+    const response = await axios.post(`${path}/token/access_token`, formData, {
       headers: {
         accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -44,7 +102,7 @@ export const get_refresh_token = async (user_name, user_password) => {
   formData.append("password", user_password);
 
   try {
-    const response = await axios.post(path + "/token/refresh_token", formData, {
+    const response = await axios.post(`${path}/token/refresh_token`, formData, {
       headers: {
         accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -69,10 +127,9 @@ export const validate_access_token = async (
   access_token = window.localStorage.getItem("access_token")
 ) => {
   // Verify if the access token is not expired
-
   try {
     const response = await axios.post(
-      path + "/token/validate_access_token?token=" + access_token,
+      `${path}/token/validate_access_token?token=${access_token}`,
       {
         headers: {
           accept: "application/json",
@@ -102,7 +159,7 @@ export const validate_refresh_token = async (
 
   try {
     const response = await axios.post(
-      path + "/token/validate_refresh_token?token=" + refresh_token,
+      `${path}/token/validate_refresh_token?token=${refresh_token}`,
       {
         headers: {
           accept: "application/json",
@@ -132,7 +189,7 @@ export const get_new_access_token = async (token) => {
 
   try {
     const response = await axios.post(
-      path + "/token/get_new_access_token?token=" + token,
+      `${path}/token/get_new_access_token?token=${token}`,
       {
         headers: {
           accept: "application/json",
@@ -174,7 +231,7 @@ export const regist_new_user = async (
 
   try {
     const response = await axios.post(
-      path + "/user/create",
+      `${path}/user/create`,
       JSON.stringify(body),
       {
         headers: {
@@ -212,7 +269,7 @@ export const get_user_id = async (
 
   try {
     const response = await axios.get(
-      path + "/user/name/{name}?user_name=" + user_name,
+      `${path}/user/name/{name}?user_name=${user_name}`,
       {
         headers: {
           accept: "application/json",
@@ -245,7 +302,7 @@ export const get_user_repos = async (
   const start_time = performance.now();
   try {
     const response = await axios.get(
-      path + "/repository/id/{id}?user_id=" + user_id,
+      `${path}/repository/id/{id}?user_id=${user_id}`,
       {
         headers: {
           accept: "application/json",
@@ -288,7 +345,7 @@ export const create_user_repo = async (
 
   try {
     const response = await axios.post(
-      path + "/repository/create",
+      `${path}/repository/create`,
       JSON.stringify(body),
       {
         headers: {
@@ -330,4 +387,85 @@ export const get_repo_tasks = async (
   token = window.localStorage.getItem("access_token")
 ) => {
   // Get the tasks in particular repo
+
+  const start_time = performance.now();
+
+  try {
+    const response = await axios.get(
+      `${path}/task/repo_id/{id}?repo_id=${repo_id}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: "Bearer " + token,
+        },
+        validateStatus: function (status) {
+          return (status >= 200 && status < 300) || status === 404;
+        },
+      }
+    );
+    if (Array.isArray(response.data)) {
+      const end_time = performance.now();
+      console.log("Get tasks spent time:" + (end_time - start_time));
+      return response.data;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      console.log(error.response.data);
+    }
+  }
+  return null;
+};
+
+export const set_repo_tasks = async (
+  task_name,
+  task_description,
+  task_due_date,
+  task_finish,
+  task_id,
+  belongs_to_repository_id,
+  creator_id,
+  token = window.localStorage.getItem("access_token")
+) => {
+  // Update the selected task using given infos
+
+  const start_time = performance.now();
+
+  const body = {
+    task_name: task_name,
+    task_description: task_description,
+    task_due_date: task_due_date,
+    task_finish: task_finish,
+    task_id: task_id,
+    belongs_to_repository_id: belongs_to_repository_id,
+    creator_id: creator_id,
+  };
+
+  try {
+    const response = await axios.put(
+      `${path}/task/update`,
+      JSON.stringify(body),
+      {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        validateStatus: function (status) {
+          return (status >= 200 && status < 300) || status === 404;
+        },
+      }
+    );
+    if (
+      response.data.detail === "Success:Successfully updated selected task."
+    ) {
+      const end_time = performance.now();
+      console.log("Update task spent time:" + (end_time - start_time));
+      return true;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      console.log(error.response.data);
+    }
+  }
+  return false;
 };

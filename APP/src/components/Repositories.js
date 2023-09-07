@@ -1,14 +1,20 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
+import { NavLink } from "react-router-dom";
 
 // Context
 import { LayoutContext, getRepos } from "./Layout";
-import { AppContext, resetLogStatus } from "../App";
-import { create_user_repo } from "./functions/request";
+import { AppContext, resetLogStatus, signOut } from "../App";
+import {
+  checkValidation,
+  create_user_repo,
+  get_repo_tasks,
+} from "./functions/request";
 
 const Repositories = () => {
-  const { repos, selectedRepo, setSelectedRepo, setRepos } =
+  const { repos, selectedRepo, setSelectedRepo, setRepos, setTasks } =
     useContext(LayoutContext);
-  const { repoIsLoading, setReRender } = useContext(AppContext);
+  const { repoIsLoading, setReRender, setTaskIsLoading } =
+    useContext(AppContext);
 
   // Get the repo name for new repo, find the empty index
   const repo_name = () => {
@@ -40,18 +46,31 @@ const Repositories = () => {
     }
     setRepos(new_repos);
   };
-  useEffect(() => {
-    console.log(repos);
-  }, [repos]);
 
   // Check if the repository has been selected
   const repoClass = (repo) => {
-    return repo === selectedRepo ? "repo selectedRepo" : "repo";
+    return repo.repo_name === selectedRepo ? "repo selectedRepo" : "repo";
   };
 
   // Set the selected repository
-  const selectRepo = (repo) => {
-    setSelectedRepo(repo.target.outerText);
+  const selectRepo = async (repo) => {
+    const selected_repo = repos.find(
+      (repo_e) => repo_e.repo_name === repo.target.innerText
+    );
+    setSelectedRepo(selected_repo.repo_name);
+
+    const get_tasks_from_repo = async () => {
+      const tasks = await get_repo_tasks(selected_repo.repo_id);
+      setTasks(tasks);
+      setTaskIsLoading(false);
+    };
+
+    setTaskIsLoading(true);
+    if (await checkValidation()) get_tasks_from_repo();
+    else {
+      signOut();
+      setReRender((prevReRender) => prevReRender + 1);
+    }
   };
 
   return (
@@ -62,13 +81,18 @@ const Repositories = () => {
         <>
           {Array.isArray(repos) &&
             repos.map((repo) => (
-              <div
-                className={repoClass(repo)}
-                onClick={(repo) => selectRepo(repo)}
+              <NavLink
+                to="/contents"
+                style={{ textDecoration: "None" }}
                 key={repo.repo_name}
               >
-                {repo.repo_name}
-              </div>
+                <div
+                  className={repoClass(repo)}
+                  onClick={(repo) => selectRepo(repo)}
+                >
+                  {repo.repo_name}
+                </div>
+              </NavLink>
             ))}
           <button className="addRepo" onClick={createRepo}>
             +

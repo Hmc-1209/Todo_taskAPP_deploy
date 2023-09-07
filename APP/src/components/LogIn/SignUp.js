@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import "./LogIn.css";
+import "../css/LogIn.css";
 import { AppContext } from "../../App";
 import { regist_new_user } from "../functions/request";
 import alert_message from "../functions/alert";
@@ -42,6 +42,12 @@ const SignUp = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      regist_user();
+    }
+  };
+
   return (
     <>
       <div className="logInPageInputHint">Username</div>
@@ -49,6 +55,7 @@ const SignUp = () => {
         type="text"
         className="logInPageInput"
         onChange={userNameOnChange}
+        onKeyDown={handleKeyPress}
       />
 
       <div className="logInPageInputHint">Password</div>
@@ -56,6 +63,7 @@ const SignUp = () => {
         type="password"
         className="logInPageInput"
         onChange={userPasswordOnChange}
+        onKeyDown={handleKeyPress}
       />
 
       <div className="logInPageInputHint">Confirm password</div>
@@ -63,6 +71,7 @@ const SignUp = () => {
         type="password"
         className="logInPageInput"
         onChange={confirmUserPasswordOnChenge}
+        onKeyDown={handleKeyPress}
       />
 
       <button className="logInPageSubmit" onClick={regist_user}>

@@ -12,6 +12,7 @@ import {
   getTaskNote,
   readDue,
 } from "./functions/localStorageCRUD";
+import { AppContext } from "../App";
 
 // Move circus
 const moveCaretAtEnd = (e) => {
@@ -24,6 +25,7 @@ const Contents = () => {
   const [hoverTask, setHoverTask] = useState(0);
 
   // Context
+  let { taskIsLoading } = useContext(AppContext);
   let {
     tasks,
     repos,
@@ -43,22 +45,16 @@ const Contents = () => {
     setFocusing,
   } = useContext(LayoutContext);
 
+  // const updateTask = async () => {
+  //   // Update local variable using given task_info_type, with task_value, then set the update info to database. If failed, roll back local variable.
+  // };
+
   // Checking the status of tasks
-  const task_finish = (task_id) => {
-    let finish_status = JSON.parse(window.localStorage.getItem("tasks"))
-      .filter((repo) => repo.repoName === selectedRepo)[0]
-      .tasks.filter((task) => task.id === task_id)[0];
-    if (finish_status) finish_status = finish_status.status;
-    else return "";
-    return finish_status === "finished" ? " finished" : "";
+  const task_finish = (task_finish) => {
+    return task_finish === 1 ? " finished" : "";
   };
-  const checked = (task_id) => {
-    let finish_status = JSON.parse(window.localStorage.getItem("tasks"))
-      .filter((repo) => repo.repoName === selectedRepo)[0]
-      .tasks.filter((task) => task.id === task_id)[0];
-    if (finish_status) finish_status = finish_status.status;
-    else return "";
-    return finish_status === "finished" ? true : false;
+  const checked = (task_finish) => {
+    return task_finish === 1 ? true : false;
   };
 
   const addTask = (selectedRepo) => {
@@ -157,149 +153,152 @@ const Contents = () => {
     setReRender(reRender + 1);
   };
 
+  if (selectedRepo === null) {
+    window.location.href = "/";
+  }
+
   return (
     <div className="contents">
-      {selectedRepo === "BaseRepo" && repos.length === 1 && (
-        <div className="contentHint">Create a repo to start</div>
-      )}
-      {selectedRepo === "BaseRepo" && repos.length !== 1 && (
-        <div className="contentHint">Select a repo</div>
-      )}
-      {selectedRepo !== "BaseRepo" && (
-        <>
-          {/* Title */}
-          {editingItem !== selectedRepo ? (
-            <div
-              className="repoName"
-              onClick={() => selectElement_repos(selectedRepo)}
-            >
-              {selectedRepo}
-            </div>
-          ) : (
-            <input
-              className="repoRename"
-              autoFocus={true}
-              placeholder={selectedRepo}
-              id={"selectedItem"}
-            />
-          )}
-
-          {/* Functional */}
-          <div className="contentRepoFunctional">
-            <button
-              className="addTaskBtn"
-              onClick={() => addTask(selectedRepo)}
-            >
-              +
-            </button>
-
-            {repos.length !== 1 && (
-              <>
-                <button className="deleteBtn" onClick={delConfirm}>
-                  <FaTrash className="trashIcon" />
-                </button>
-                {delRepoConfirm ? (
-                  <button className="delConfirm" onClick={delRepo}>
-                    !
-                  </button>
-                ) : (
-                  <></>
-                )}
-              </>
-            )}
+      <>
+        {/* Title */}
+        {editingItem !== selectedRepo ? (
+          <div
+            className="repoName"
+            onClick={() => selectElement_repos(selectedRepo)}
+          >
+            {selectedRepo}
           </div>
+        ) : (
+          <input
+            className="repoRename"
+            autoFocus={true}
+            placeholder={selectedRepo}
+            id={"selectedItem"}
+          />
+        )}
 
-          {/* Tasks */}
-          {tasks
-            .filter((task) => task.id !== 0)
-            .map((task) => (
-              <div
-                className={"task" + task_finish(task.id)}
-                key={task.id}
-                onMouseEnter={() => setHoverTask(task.id)}
-                onMouseLeave={() => setHoverTask(0)}
-              >
-                {/* Mark finish buttom */}
-                <input
-                  type="checkbox"
-                  className={"markFinishBtn" + task_finish(task.id)}
-                  onChange={() => switchStatus(task.id)}
-                  checked={checked(task.id)}
-                />
+        {/* Functional */}
+        <div className="contentRepoFunctional">
+          <button className="addTaskBtn" onClick={() => addTask(selectedRepo)}>
+            +
+          </button>
 
-                {/* Task info include name and due date */}
-                <div className={"taskInfo" + task_finish(task.id)}>
-                  {editingItem !== task.id || editingType !== "task:name" ? (
-                    <div
-                      onClick={() => selectElement_task_name(task.id)}
-                      style={{ paddingBottom: "2%" }}
-                      className={task_finish(task.id)}
-                    >
-                      {task.taskName}
-                    </div>
-                  ) : (
-                    <input
-                      className={"taskRename" + task_finish(task.id)}
-                      id={"selectedItem"}
-                      autoFocus={true}
-                      placeholder={getTaskName(selectedRepo, task.id)}
-                      style={{ paddingBottom: "2%" }}
-                    />
-                  )}
-                  <hr style={{ width: "90%" }} />
-                  <br />
+          {repos.length !== 1 && (
+            <>
+              <button className="deleteBtn" onClick={delConfirm}>
+                <FaTrash className="trashIcon" />
+              </button>
+              {delRepoConfirm ? (
+                <button className="delConfirm" onClick={delRepo}>
+                  !
+                </button>
+              ) : (
+                <></>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Tasks */}
+        {taskIsLoading === true && (
+          <p
+            style={{
+              color: "#FFEAD2",
+              paddingLeft: "3%",
+              backgroundColor: "#a4b3de",
+            }}
+          >
+            Loading...
+          </p>
+        )}
+        {taskIsLoading === false &&
+          tasks.map((task) => (
+            <div
+              className={"task" + task_finish(task.task_finish)}
+              key={task.task_id}
+              onMouseEnter={() => setHoverTask(task.task_id)}
+              onMouseLeave={() => setHoverTask(0)}
+            >
+              {/* Mark finish buttom */}
+              <input
+                type="checkbox"
+                className={"markFinishBtn" + task_finish(task.task_finish)}
+                onChange={() => switchStatus(task.task_id)}
+                checked={checked(task.task_finish)}
+              />
+
+              {/* Task info include name and due date */}
+              <div className={"taskInfo" + task_finish(task.task_id)}>
+                {editingItem !== task.task_id || editingType !== "task:name" ? (
                   <div
-                    className={task_finish(task.id)}
-                    onClick={() => selectElement_task_due(task.id)}
+                    onClick={() => selectElement_task_name(task.task_id)}
+                    style={{ paddingBottom: "2%" }}
+                    className={task_finish(task.task_finish)}
                   >
-                    {task.due}
-                  </div>
-                  {editingType === "task:due" && editingItem === task.id && (
-                    <div>
-                      <div className="back" onClick={() => closeDatePicker()} />
-                      <TaskDatePicker />
-                    </div>
-                  )}
-                </div>
-
-                {/* Task note */}
-                {editingItem !== task.id || editingType !== "task:note" ? (
-                  <div
-                    className={"taskNote" + task_finish(task.id)}
-                    onClick={() => selectElement_task_note(task.id)}
-                  >
-                    {task.notes}
+                    {task.task_name}
                   </div>
                 ) : (
-                  <textarea
-                    className={"taskChangeNote" + task_finish(task.id)}
+                  <input
+                    className={"taskRename" + task_finish(task.task_finish)}
+                    id={"selectedItem"}
                     autoFocus={true}
-                    onFocus={moveCaretAtEnd}
-                    id="selectedItem"
-                    spellCheck={false}
-                    defaultValue={getTaskNote(selectedRepo, task.id)}
+                    placeholder={getTaskName(selectedRepo, task.task_id)}
+                    style={{ paddingBottom: "2%" }}
                   />
                 )}
-                {editing === 4 && (
-                  <div className="back" onClick={() => stopEditingTaskNote()} />
-                )}
-
-                {/* Del task button */}
+                <hr style={{ width: "90%" }} />
+                <br />
                 <div
-                  className={
-                    hoverTask === task.id ? "delTaskBtn_hover" : "delTaskBtn"
-                  }
-                  onClick={() => {
-                    if (editing === 0) {
-                      delTask(selectedRepo, task.id);
-                      setReRender(reRender + 1);
-                    }
-                  }}
-                />
+                  className={task_finish(task.task_finish)}
+                  onClick={() => selectElement_task_due(task.id)}
+                >
+                  {task.task_due_date}
+                </div>
+                {editingType === "task:due" && editingItem === task.task_id && (
+                  <div>
+                    <div className="back" onClick={() => closeDatePicker()} />
+                    <TaskDatePicker />
+                  </div>
+                )}
               </div>
-            ))}
-        </>
-      )}
+
+              {/* Task note */}
+              {editingItem !== task.task_id || editingType !== "task:note" ? (
+                <div
+                  className={"taskNote" + task_finish(task.task_finish)}
+                  onClick={() => selectElement_task_note(task.task_id)}
+                >
+                  {task.task_description}
+                </div>
+              ) : (
+                <textarea
+                  className={"taskChangeNote" + task_finish(task.task_finish)}
+                  autoFocus={true}
+                  onFocus={moveCaretAtEnd}
+                  id="selectedItem"
+                  spellCheck={false}
+                  defaultValue={getTaskNote(selectedRepo, task.task_id)}
+                />
+              )}
+              {editing === 4 && (
+                <div className="back" onClick={() => stopEditingTaskNote()} />
+              )}
+
+              {/* Del task button */}
+              <div
+                className={
+                  hoverTask === task.task_id ? "delTaskBtn_hover" : "delTaskBtn"
+                }
+                onClick={() => {
+                  if (editing === 0) {
+                    delTask(selectedRepo, task.task_id);
+                    setReRender(reRender + 1);
+                  }
+                }}
+              />
+            </div>
+          ))}
+      </>
     </div>
   );
 };

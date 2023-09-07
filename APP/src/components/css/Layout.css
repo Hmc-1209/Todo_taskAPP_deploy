@@ -1,0 +1,15 @@
+.signOutButton {
+  font-size: 3vh;
+  padding:1vh;
+  border-radius: 25%;
+  color:rgb(154, 32, 32);
+  border:1vh solid rgb(154, 32, 32);
+  position: fixed;
+  bottom:5%;
+  right:5%;
+}
+
+.signOutButton:hover {
+  color:rgba(154, 32, 32, 0.712);
+  border:1vh solid rgb(154, 32, 32, 0.712);
+}

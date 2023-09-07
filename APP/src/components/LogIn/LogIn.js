@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 
-import "./LogIn.css";
+import "../css/LogIn.css";
 import get_access_token from "../functions/request";
 import { get_refresh_token } from "../functions/request";
 import { AppContext } from "../../App";
@@ -8,35 +8,18 @@ import alert_message from "../functions/alert";
 import { get_user_id } from "../functions/request";
 
 const LogIn = () => {
-  const [rememberUser, setRememberUser] = useState(false);
-  let {
-    userName,
-    setUserName,
-    userPassword,
-    setUserPassword,
-    setReRender,
-    alert,
-    setAlert,
-    setUserId,
-  } = useContext(AppContext);
-
-  const userNameOnChange = (element) => {
-    setUserName(element.target.value);
-  };
-  const userPasswordOnChange = (element) => {
-    setUserPassword(element.target.value);
-  };
-  const rememberUserOnChange = () => {
-    setRememberUser(!rememberUser);
-  };
+  let { setReRender, alert, setAlert, setUserId } = useContext(AppContext);
 
   const logIn = async () => {
+    const userName = document.getElementById("Username").value;
+    const userPassword = document.getElementById("Password").value;
+    const rememberUser = document.getElementById("RememberMe").checked;
     if (userName === "" || userPassword === "") {
       setAlert(6);
       return;
     }
+    setAlert(7);
     const result = await get_access_token(userName, userPassword);
-    console.log(result);
     if (result === 0) {
       window.localStorage.setItem("isLogIn", 1);
       if (rememberUser) {
@@ -51,20 +34,28 @@ const LogIn = () => {
     setAlert(result);
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      logIn();
+    }
+  };
+
   return (
     <>
       <div className="logInPageInputHint">Username</div>
       <input
         type="text"
         className="logInPageInput"
-        onChange={userNameOnChange}
+        onKeyDown={handleKeyPress}
+        id={"Username"}
       />
 
       <div className="logInPageInputHint">Password</div>
       <input
         type="password"
         className="logInPageInput"
-        onChange={userPasswordOnChange}
+        onKeyDown={handleKeyPress}
+        id={"Password"}
       />
 
       <div style={{ padding: "1% 0 0 0 ", color: "#FFEAD2" }}>
@@ -72,13 +63,13 @@ const LogIn = () => {
         <input
           type="checkbox"
           className="logInPageCheckInput"
-          onChange={rememberUserOnChange}
+          id={"RememberMe"}
         />
       </div>
 
-      <button className="logInPageSubmit" onClick={logIn}>
-        Submit
-      </button>
+      <div onClick={logIn}>
+        <button className="logInPageSubmit">Submit</button>
+      </div>
 
       {alert !== 0 && alert_message(alert)}
     </>

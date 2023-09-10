@@ -1,7 +1,7 @@
 import React from "react";
 import { useContext } from "react";
 import { AppContext } from "../../App";
-import "./FirstVisit.css";
+import "../css/FirstVisit.css";
 import alert_message from "../functions/alert";
 
 const FirstVisit = () => {

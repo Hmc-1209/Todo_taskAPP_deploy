@@ -1,4 +1,4 @@
-import "./functions.css";
+import "../css/functions.css";
 import { FaExclamationCircle } from "react-icons/fa";
 
 const alert_message = (alert) => {

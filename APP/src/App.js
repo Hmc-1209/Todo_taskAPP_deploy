@@ -153,6 +153,17 @@ function App() {
           )}
         </Routes>
       </BrowserRouter>
+      <div
+        style={{
+          position: "fixed",
+          bottom: "1%",
+          left: "1%",
+          width: "100%",
+          opacity: ".5",
+        }}
+      >
+        Copyright © 2023 DannyHo
+      </div>
     </AppContext.Provider>
   );
 }

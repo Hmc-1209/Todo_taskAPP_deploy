@@ -12,6 +12,7 @@ import {
   delete_user_repo,
   delete_repo_task,
 } from "./functions/request";
+import { NavLink } from "react-router-dom";
 
 // Move circus
 const moveCaretAtEnd = (e) => {
@@ -120,7 +121,7 @@ const Contents = () => {
   const delRepo = async () => {
     // On delete particular repo
 
-    if (repos.length !== 1) {
+    if (repos.length !== 0) {
       let now_repos = [...repos];
       const old_value = [...repos];
       const old_repo_name = selectedRepo;
@@ -130,6 +131,7 @@ const Contents = () => {
       const repo_id = repos.find(
         (repo) => repo.repo_name === selectedRepo
       ).repo_id;
+      console.log(now_repos);
 
       now_repos = now_repos.filter((repo) => repo.repo_id !== repo_id);
       setRepos(now_repos);
@@ -139,7 +141,9 @@ const Contents = () => {
           ? null
           : repos.length === 1
           ? repos[0].repo_name
-          : repos[selectedIndex - 1].repo_name
+          : repos[selectedIndex - 1]
+          ? repos[selectedIndex - 1].repo_name
+          : repos[selectedIndex + 1].repo_name
       );
       if (selectedRepo !== null) {
         setTaskIsLoading(true);
@@ -248,8 +252,14 @@ const Contents = () => {
   useEffect(() => {
     // If need to get tasks from repo
 
+    if (taskIsLoading === false) return;
+    if (repos.length === 0) {
+      setTaskIsLoading(false);
+      setSelectedRepo(null);
+      return;
+    }
     const fetchData = async () => {
-      if (taskIsLoading === true) {
+      if (taskIsLoading === true && repos.length !== 0) {
         const tasks = await get_repo_tasks(
           repos.find((repo) => repo.repo_name === selectedRepo).repo_id
         );
@@ -295,20 +305,20 @@ const Contents = () => {
             +
           </button>
 
-          {repos.length !== 1 && (
-            <>
-              <button className="deleteBtn" onClick={delConfirm}>
-                <FaTrash className="trashIcon" />
-              </button>
-              {delRepoConfirm ? (
+          <>
+            <button className="deleteBtn" onClick={delConfirm}>
+              <FaTrash className="trashIcon" />
+            </button>
+            {delRepoConfirm ? (
+              <NavLink to="/">
                 <button className="delConfirm" onClick={delRepo}>
                   !
                 </button>
-              ) : (
-                <></>
-              )}
-            </>
-          )}
+              </NavLink>
+            ) : (
+              <></>
+            )}
+          </>
         </div>
 
         {/* Tasks */}

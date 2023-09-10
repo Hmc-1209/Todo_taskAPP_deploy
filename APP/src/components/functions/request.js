@@ -338,7 +338,7 @@ export const create_user_repo = async (
 
   const body = {
     repo_name: repo_name,
-    creator_id: user_id,
+    creator_id: parseInt(user_id),
   };
 
   console.log(body);
@@ -373,12 +373,89 @@ export const create_user_repo = async (
   return null;
 };
 
-export const update_user_repo = async (repo_id, repo_new_name) => {
+export const update_user_repo = async (
+  repo_id,
+  repo_new_name,
+  token = window.localStorage.getItem("access_token")
+) => {
   // Update particular repo name
+
+  const start_time = performance.now();
+
+  const body = {
+    repo_name: repo_new_name,
+    repo_id: repo_id,
+  };
+
+  try {
+    const response = await axios.put(
+      `${path}/repository/update`,
+      JSON.stringify(body),
+      {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        validateStatus: function (status) {
+          return (status >= 200 && status < 300) || status === 404;
+        },
+      }
+    );
+    if (
+      response.data.detail === "Success:Successfully updated the repository."
+    ) {
+      const end_time = performance.now();
+      console.log("Update repo spent time:" + (end_time - start_time));
+      return true;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      console.log(error.response.data);
+    }
+  }
+  return false;
 };
 
-export const delete_user_repo = async (repo_id, repo_name) => {
+export const delete_user_repo = async (
+  repo_id,
+  repo_name,
+  token = window.localStorage.getItem("access_token")
+) => {
   // Delete particular repo
+
+  const start_time = performance.now();
+
+  const body = {
+    repo_name: repo_name,
+    repo_id: repo_id,
+  };
+
+  try {
+    const response = await axios.delete(`${path}/repository/delete`, {
+      data: JSON.stringify(body),
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      validateStatus: function (status) {
+        return (status >= 200 && status < 300) || status === 404;
+      },
+    });
+    if (
+      response.data.detail === "Success:Successfully deleted the repository."
+    ) {
+      const end_time = performance.now();
+      console.log("Delete repo spent time:" + (end_time - start_time));
+      return true;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      console.log(error.response.data);
+    }
+  }
+  return false;
 };
 
 /* Request CRUD behaviors with task */
@@ -416,7 +493,62 @@ export const get_repo_tasks = async (
   return null;
 };
 
-export const set_repo_tasks = async (
+export const create_repo_task = async (
+  creator_id,
+  belongs_to_repository_id,
+  token = window.localStorage.getItem("access_token")
+) => {
+  // Creating new task for particular repo
+
+  const start_time = performance.now();
+  const date = new Date();
+  console.log(
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+  );
+
+  const body = {
+    task_name: "NewTask",
+    task_description: "Enter description here.",
+    task_due_date:
+      date.getFullYear() +
+      "-" +
+      String(date.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(date.getDate()).padStart(2, "0"),
+    task_finish: 0,
+    creator_id: creator_id,
+    belongs_to_repository_id: belongs_to_repository_id,
+  };
+
+  try {
+    const response = await axios.post(
+      `${path}/task/create`,
+      JSON.stringify(body),
+      {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        validateStatus: function (status) {
+          return (status >= 200 && status < 300) || status === 404;
+        },
+      }
+    );
+    if (response.data.detail === "Success:Successfully created new task.") {
+      const end_time = performance.now();
+      console.log("Create tasks spent time:" + (end_time - start_time));
+      return response.data;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      console.log(error.response.data);
+    }
+  }
+  return null;
+};
+
+export const update_repo_task = async (
   task_name,
   task_description,
   task_due_date,
@@ -460,6 +592,43 @@ export const set_repo_tasks = async (
     ) {
       const end_time = performance.now();
       console.log("Update task spent time:" + (end_time - start_time));
+      return true;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      console.log(error.response.data);
+    }
+  }
+  return false;
+};
+
+export const delete_repo_task = async (
+  task_id,
+  token = window.localStorage.getItem("access_token")
+) => {
+  // Delete specific task in repo
+
+  const start_time = performance.now();
+
+  const body = {
+    task_id: task_id,
+  };
+
+  try {
+    const response = await axios.delete(`${path}/task/delete`, {
+      data: JSON.stringify(body),
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      validateStatus: function (status) {
+        return (status >= 200 && status < 300) || status === 404;
+      },
+    });
+    if (response.data.detail === "Success:Successfully deleted the task.") {
+      const end_time = performance.now();
+      console.log("Delete task spent time:" + (end_time - start_time));
       return true;
     }
   } catch (error) {

@@ -1,45 +1,5 @@
 import { getNowDate } from "./date";
 
-const get_task_index = (taskData) => {
-  let id_index = 1;
-  while (1) {
-    // eslint-disable-next-line
-    if (!taskData.find((task) => task.id === id_index)) break;
-    id_index++;
-  }
-  return id_index;
-};
-
-/* Create base repo and task */
-export const createBase = () => {
-  // Setting default repo
-  window.localStorage.setItem("repos", JSON.stringify(["BaseRepo"]));
-  // Setting default task
-  window.localStorage.setItem(
-    "tasks",
-    JSON.stringify([
-      {
-        repoName: "BaseRepo",
-        tasks: [
-          {
-            taskName: "BaseTask",
-            due: getNowDate(),
-            tags: "none",
-            notes: "This is a base repo due to not reading a null element",
-            status: "This should nerver been used",
-            id: 0,
-          },
-        ],
-      },
-    ])
-  );
-  // Setting default tag
-  window.localStorage.setItem(
-    "tags",
-    JSON.stringify([{ repoName: "BaseRepo", tags: [] }])
-  );
-};
-
 /* When delete a repo */
 export const deleteRepo = (selectedRepo) => {
   let taskData = window.localStorage.getItem("tasks");
@@ -114,25 +74,6 @@ export const updateTagsOnCreate = (new_repo) => {
       })
     )
   );
-};
-
-/* When clicking the add task button, generate an empty task */
-export const addEmptyTask = (selectedRepo) => {
-  let Data = JSON.parse(window.localStorage.getItem("tasks"));
-  let taskData = Data.find((repo) => repo.repoName === selectedRepo).tasks;
-
-  Data.find((repo) => repo.repoName === selectedRepo).tasks = [
-    {
-      taskName: "Task",
-      due: getNowDate(),
-      tags: [],
-      notes: "",
-      status: "unfinished",
-      id: get_task_index(taskData),
-    },
-  ].concat(taskData);
-
-  window.localStorage.setItem("tasks", JSON.stringify(Data));
 };
 
 /* When a task name changed, adjust the corresponding taskName in tasks */

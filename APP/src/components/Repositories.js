@@ -1,20 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 // Context
 import { LayoutContext, getRepos } from "./Layout";
-import { AppContext, resetLogStatus, signOut } from "../App";
-import {
-  checkValidation,
-  create_user_repo,
-  get_repo_tasks,
-} from "./functions/request";
+import { AppContext, resetLogStatus } from "../App";
+import { create_user_repo } from "./functions/request";
 
 const Repositories = () => {
-  const { repos, selectedRepo, setSelectedRepo, setRepos, setTasks } =
+  const [createRepoCooldown, setCreateRepoCooldown] = useState(false);
+
+  const { repos, selectedRepo, setSelectedRepo, setRepos, setAlert } =
     useContext(LayoutContext);
-  const { repoIsLoading, setReRender, setTaskIsLoading } =
-    useContext(AppContext);
+  const { repoIsLoading, setTaskIsLoading } = useContext(AppContext);
 
   // Get the repo name for new repo, find the empty index
   const repo_name = () => {
@@ -36,15 +33,25 @@ const Repositories = () => {
 
   // Create a new repository
   const createRepo = async () => {
-    const new_repo = repo_name();
-    await create_user_repo(new_repo);
-    const new_repos = await getRepos();
-    console.log(new_repos);
-    if (new_repos === null) {
-      resetLogStatus();
-      setReRender((prevReRender) => prevReRender + 1);
+    const new_repo_name = repo_name();
+    const new_repo = { repo_name: new_repo_name };
+    const old_value = [...repos];
+    const now_repos = [...repos, new_repo];
+    setRepos(now_repos);
+    setCreateRepoCooldown(true);
+
+    const result = await create_user_repo(new_repo_name);
+    if (!result) {
+      console.log("Create repo roll back.");
+      setRepos(old_value);
+      setAlert(8);
+    } else {
+      const new_repos = await getRepos();
+      setRepos(new_repos);
+      if (new_repos === null) {
+        resetLogStatus();
+      }
     }
-    setRepos(new_repos);
   };
 
   // Check if the repository has been selected
@@ -52,25 +59,26 @@ const Repositories = () => {
     return repo.repo_name === selectedRepo ? "repo selectedRepo" : "repo";
   };
 
+  useEffect(() => {
+    if (createRepoCooldown) {
+      const timer = setTimeout(() => {
+        setCreateRepoCooldown(false);
+      }, 500);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [createRepoCooldown]);
+
   // Set the selected repository
   const selectRepo = async (repo) => {
+    if (repo.target.innerText === selectedRepo) return;
     const selected_repo = repos.find(
       (repo_e) => repo_e.repo_name === repo.target.innerText
     );
     setSelectedRepo(selected_repo.repo_name);
-
-    const get_tasks_from_repo = async () => {
-      const tasks = await get_repo_tasks(selected_repo.repo_id);
-      setTasks(tasks);
-      setTaskIsLoading(false);
-    };
-
     setTaskIsLoading(true);
-    if (await checkValidation()) get_tasks_from_repo();
-    else {
-      signOut();
-      setReRender((prevReRender) => prevReRender + 1);
-    }
   };
 
   return (
@@ -80,23 +88,33 @@ const Repositories = () => {
       ) : (
         <>
           {Array.isArray(repos) &&
-            repos.map((repo) => (
-              <NavLink
-                to="/contents"
-                style={{ textDecoration: "None" }}
-                key={repo.repo_name}
-              >
-                <div
-                  className={repoClass(repo)}
-                  onClick={(repo) => selectRepo(repo)}
-                >
-                  {repo.repo_name}
+            repos.map((repo) =>
+              !repo.repo_id ? (
+                <div style={{ textDecoration: "None" }} key={repo.repo_name}>
+                  <div className={repoClass(repo)} style={{ color: "#D9B300" }}>
+                    {repo.repo_name}
+                  </div>
                 </div>
-              </NavLink>
-            ))}
-          <button className="addRepo" onClick={createRepo}>
-            +
-          </button>
+              ) : (
+                <NavLink
+                  to="/contents"
+                  style={{ textDecoration: "None" }}
+                  key={repo.repo_name}
+                >
+                  <div
+                    className={repoClass(repo)}
+                    onClick={(repo) => selectRepo(repo)}
+                  >
+                    {repo.repo_name}
+                  </div>
+                </NavLink>
+              )
+            )}
+          {!createRepoCooldown && (
+            <button className="addRepo" onClick={createRepo}>
+              +
+            </button>
+          )}
         </>
       )}
     </>

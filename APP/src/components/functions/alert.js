@@ -1,4 +1,6 @@
 import "./functions.css";
+import { FaExclamationCircle } from "react-icons/fa";
+
 const alert_message = (alert) => {
   switch (alert) {
     case 1:
@@ -39,6 +41,46 @@ const alert_message = (alert) => {
 
     case 7:
       return <div className="alertMessageShort green">Loging...</div>;
+
+    case 8:
+      return (
+        <div className="alert">
+          <div className="error">
+            <FaExclamationCircle className="exclamationIcon" />
+            Action failed due to connection or server error.
+          </div>
+        </div>
+      );
+
+    case 9:
+      return (
+        <div className="alert">
+          <div className="error">
+            <FaExclamationCircle className="exclamationIcon" />
+            Repository name repeated !
+          </div>
+        </div>
+      );
+
+    case 10:
+      return (
+        <div className="alert">
+          <div className="error">
+            <FaExclamationCircle className="exclamationIcon" />
+            Repository name should be less then 15 letters !
+          </div>
+        </div>
+      );
+
+    case 11:
+      return (
+        <div
+          className="alertMessageShort red content center"
+          style={{ padding: "0%" }}
+        >
+          You have to accept the policy to continue!
+        </div>
+      );
 
     default:
       return <div></div>;

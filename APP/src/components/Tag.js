@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { LayoutContext } from "./Layout";
-import { addTag } from "./functions/localStorageCRUD";
 
 const Tags = () => {
   const { tags, editing, setEditing, selectedRepo, reRender, setReRender } =
@@ -11,20 +10,20 @@ const Tags = () => {
   };
 
   const setTag = () => {
-    const new_tag = document.getElementById("newTag").value;
+    // const new_tag = document.getElementById("newTag").value;
     setEditing(0);
-    addTag(selectedRepo, new_tag);
+    // addTag(selectedRepo, new_tag);
     setReRender(reRender + 1);
   };
 
   return (
     <div className="tags">
+      Comming soon
       {tags.map((tag) => (
         <div className="tag" key={tag}>
           {tag}
         </div>
       ))}
-
       {/* Add new tag */}
       {editing === 6 && (
         <input
@@ -36,15 +35,14 @@ const Tags = () => {
         />
       )}
       {editing === 6 && <div className="back" onClick={() => setTag()} />}
-
-      {selectedRepo !== "BaseRepo" && (
+      {/* {selectedRepo !== "BaseRepo" && (
         <button
           className="addTag"
           onClick={() => selectElement_addTag(selectedRepo)}
         >
           +
         </button>
-      )}
+      )} */}
     </div>
   );
 };

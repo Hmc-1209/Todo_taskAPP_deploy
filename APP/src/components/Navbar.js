@@ -66,7 +66,7 @@ const Navbar = () => {
         </>
       )}
 
-      <input type="text" className="btn searchBar" placeholder="Search task" />
+      <input type="text" className="btn searchBar" placeholder="Comming soon" />
     </nav>
   );
 };

@@ -1,18 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
-import { FaExclamationCircle, FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
 import "./css/Layout.css";
 
 // Components
 import SideBarL from "./SidebarL";
 import Navbar from "./Navbar";
+import { AppContext, resetLogStatus, signOut } from "../App";
 import {
-  changeRepoName,
-  changeTaskName,
-  changeTaskNote,
-} from "./functions/localStorageCRUD";
-import { AppContext, resetLogStatus } from "../App";
-import { get_user_repos, checkValidation } from "./functions/request";
+  get_user_repos,
+  checkValidation,
+  update_user_repo,
+  update_repo_task,
+} from "./functions/request";
+import alert_message from "./functions/alert";
 
 export const LayoutContext = createContext(null);
 
@@ -20,17 +21,6 @@ export const LayoutContext = createContext(null);
 export const getRepos = async () => {
   const repos = await get_user_repos();
   return repos;
-};
-
-// Check if the repo name is legal
-const repoNameLegal = (new_name) => {
-  let name = JSON.parse(window.localStorage.getItem("repos"));
-  return name.find((name) => name === new_name) ? 0 : 1;
-};
-
-export const setNote = (selectedRepo, editingItem) => {
-  const new_task_note = document.getElementById("selectedItem").value;
-  changeTaskNote(selectedRepo, editingItem, new_task_note);
 };
 
 const Layout = () => {
@@ -42,14 +32,13 @@ const Layout = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [editingType, setEditingType] = useState(null);
   const [reRender, setReRender] = useState(0);
-  const [alert, setAlert] = useState(0);
   const [alertMessage, setAlertMessage] = useState(null);
   const [delRepoConfirm, setDelRepoConfirm] = useState(0);
   const [due, setDue] = useState([-1, -1, -1]);
   const [focusing, setFocusing] = useState(0);
   const location = useLocation();
 
-  let { setRepoIsLoading } = useContext(AppContext);
+  let { setRepoIsLoading, setAlert, alert } = useContext(AppContext);
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -69,6 +58,89 @@ const Layout = () => {
     // eslint-disable-next-line
   }, []);
 
+  const repoNameLegal = (new_name) => {
+    // Check if the repo name is legal
+
+    return repos.find((repo) => repo.repo_name === new_name) ? 0 : 1;
+  };
+
+  const updateRepoName = async (repo_name) => {
+    // Update the specific repo's name
+
+    const repo_id = repos.find(
+      (repo) => repo.repo_name === editingItem
+    ).repo_id;
+
+    const updatedRepoIndex = repos.findIndex(
+      (repo) => repo.repo_id === repo_id
+    );
+
+    if (updatedRepoIndex !== -1) {
+      const old_value = repos[updatedRepoIndex].repo_name;
+      const updatedRepos = [...repos];
+
+      updatedRepos[updatedRepoIndex].repo_name = repo_name;
+      setRepos(updatedRepos);
+
+      const result = await update_user_repo(repo_id, repo_name);
+      console.log(result);
+
+      if (!result) {
+        console.log("Update repo name roll back.");
+        updatedRepos[updatedRepoIndex].repo_name = old_value;
+        setRepos(updatedRepos);
+        setSelectedRepo(old_value);
+        setAlert(8);
+        if (!(await checkValidation())) signOut();
+        return;
+      }
+    }
+  };
+
+  const updateTask = async (task_id, task_info_type, task_info_value) => {
+    // Find the task to update
+
+    const updatedTaskIndex = tasks.findIndex(
+      (task) => task.task_id === task_id
+    );
+
+    if (updatedTaskIndex !== -1) {
+      const old_value = tasks[updatedTaskIndex][task_info_type];
+      const updatedTasks = [...tasks];
+
+      updatedTasks[updatedTaskIndex] = {
+        ...updatedTasks[updatedTaskIndex],
+        [task_info_type]: task_info_value,
+      };
+      setTasks(updatedTasks);
+
+      const repo_id = repos.find(
+        (repo) => repo.repo_name === selectedRepo
+      ).repo_id;
+
+      const result = await update_repo_task(
+        updatedTasks[updatedTaskIndex].task_name,
+        updatedTasks[updatedTaskIndex].task_description,
+        updatedTasks[updatedTaskIndex].task_due_date,
+        updatedTasks[updatedTaskIndex].task_finish,
+        updatedTasks[updatedTaskIndex].task_id,
+        repo_id,
+        updatedTasks[updatedTaskIndex].creator_id
+      );
+
+      if (!result) {
+        console.log("Update task rollback");
+        updatedTasks[updatedTaskIndex][task_info_type] = old_value;
+        setTasks(updatedTasks);
+        setAlert(8);
+        if (!(await checkValidation())) {
+          signOut();
+        }
+        return;
+      }
+    }
+  };
+
   // On change (finished editing)
   const changeEditingState = () => {
     // Default first click
@@ -76,28 +148,32 @@ const Layout = () => {
     // If finish editing
     else {
       if (editing === 1) {
+        // Finish editing repo name
+
         const new_name = document.getElementById("selectedItem").value;
         if (
           new_name !== "" &&
           repoNameLegal(new_name) &&
           new_name.length <= 15
         ) {
-          changeRepoName(new_name, editingItem);
+          updateRepoName(new_name);
           setSelectedRepo(new_name);
         } else {
           if (!repoNameLegal(new_name)) {
-            setAlertMessage("Repository name repeated !");
-            setAlert(1);
+            setAlert(9);
           } else if (new_name > 15) {
-            setAlertMessage("Repository name should be less then 15 letters !");
-            setAlert(1);
+            setAlert(10);
           }
         }
       } else if (editing === 2) {
+        // Finish editing task name
+
+        console.log("Finished editing task name");
         const new_task_name = document.getElementById("selectedItem").value;
-        if (new_task_name !== "" && new_task_name.length <= 10) {
-          changeTaskName(selectedRepo, editingItem, new_task_name);
-        } else if (new_task_name > 10) {
+        if (new_task_name !== "" && new_task_name.length <= 15) {
+          console.log(tasks);
+          updateTask(editingItem, editingType, new_task_name);
+        } else if (new_task_name > 15) {
           setAlertMessage("Task name should be less then 10 letters !");
           setAlert(1);
         }
@@ -105,7 +181,6 @@ const Layout = () => {
 
       // Reseting click detect
       if (editing !== 0 && editing !== 4 && editing !== 5 && editing !== 6) {
-        setReRender(reRender + 1);
         setEditingItem(null);
         setEditingType(null);
         setDelRepoConfirm(0);
@@ -147,6 +222,7 @@ const Layout = () => {
           setDue,
           focusing,
           setFocusing,
+          updateTask,
         }}
       >
         <Navbar />
@@ -167,18 +243,12 @@ const Layout = () => {
             </div>
           )}
           {/* If selected repo(path changed to contents) */}
-          {location.pathname === "/contents" && <Outlet />}
+          {(location.pathname === "/contents" ||
+            location.pathname === "/tags") && <Outlet />}
         </div>
       </LayoutContext.Provider>
 
-      {alert !== 0 && (
-        <div className="alert">
-          <div className="error">
-            <FaExclamationCircle className="exclamationIcon" />
-            {alertMessage}
-          </div>
-        </div>
-      )}
+      {alert !== 0 && alert_message(alert)}
 
       <div onClick={resetLogStatus}>
         <NavLink to="/">

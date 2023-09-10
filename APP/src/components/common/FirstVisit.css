@@ -1,0 +1,65 @@
+body {
+  color:#FFEAD2;
+  font-weight: bold;
+  background-color: rgba(55, 109, 156, 0.638);
+}
+
+.FirstVisit {
+  position: fixed;
+  text-align: center;
+  background-color: rgba(55, 119, 156, 0.94);
+  width:80%;
+  height:90%;
+  margin-left:10%;
+  border-radius: 1vw;
+  overflow-y: auto;
+}
+
+.title {
+  padding-top:5%;
+  font-size: 3vw;
+  background-color: rgba(55, 109, 156, 0);
+}
+
+.subTitle {
+  font-size: larger;
+  padding-top:3%;
+  padding-left:5%;
+  padding-right:5%;
+  width: 90%;
+  text-align: left;
+  background-color: rgba(55, 109, 156, 0);
+}
+
+.content {
+  padding-top:2%;
+  padding-left:5%;
+  padding-right:5%;
+  font-size: 1vw;
+  text-align: left;
+  background-color: rgba(55, 109, 156, 0);
+}
+
+.center {
+  text-align: center;
+}
+
+.box {
+  max-height:30%;
+  overflow-y: auto;
+  text-decoration: none;
+  background-color: rgba(55, 109, 156, 0);
+}
+
+.acceptButton {
+  padding:1%;
+  margin:1%;
+  border-radius: 1vw;
+  background-color: rgba(95, 140, 180, 0.594);
+  font-weight: bold;
+  border:none;
+}
+
+.acceptButton:hover {
+  background-color: rgb(95, 140, 180);
+}

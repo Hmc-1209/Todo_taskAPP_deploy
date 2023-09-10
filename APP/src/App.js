@@ -6,6 +6,7 @@ import Contents from "./components/Contents";
 import Tags from "./components/Tag";
 import Layout from "./components/Layout";
 import Home from "./components/Home";
+import FirstVisit from "./components/common/FirstVisit";
 import LogInPage from "./components/LogIn/LogInPage";
 import {
   validate_access_token,
@@ -135,6 +136,10 @@ function App() {
         setTaskIsLoading,
       }}
     >
+      {(!window.localStorage.getItem("firstVisit") ||
+        window.localStorage.getItem("firstVisit") !== "false") && (
+        <FirstVisit />
+      )}
       <BrowserRouter>
         <Routes>
           {!isLogIn && <Route path="/" element={<LogInPage />}></Route>}

@@ -4,6 +4,7 @@ DROP USER IF EXISTS 'Todo_taskApp_root'@'localhost';
 DROP USER IF EXISTS 'Todo_taskApp_admin'@'%';
 DROP USER IF EXISTS 'Todo_taskApp_user'@'%';
 
+SELECT @db_password;
 -- Setting configuration
 SOURCE ~/Documents/Todo_taskAPP_server/DataBase/config.sql;
 
